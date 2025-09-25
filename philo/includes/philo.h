@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 00:30:49 by marvin            #+#    #+#             */
-/*   Updated: 2025/09/23 12:45:22 by marvin           ###   ########.fr       */
+/*   Updated: 2025/09/25 09:54:51 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,8 @@ typedef struct s_pinfo
 	int				tte;
 	int 			tts;
 	int				must_eat;
-	struct timeval	tv;
+	int				start_sign;
+	struct timeval	start_tv;
 }	t_pinfo;
 
 typedef enum	e_fstate{
@@ -80,22 +81,33 @@ typedef enum	e_pstate{
 
 typedef struct	s_fork{
 	enum e_fstate	fstate;
+	int				*owner;
+	int				fid;
 	pthread_mutex_t	mutex;
 }	t_fork;
 
 typedef struct s_pargs
 {
 	int				id;
+	int				initial_flag;
+	int				*any_philo_died;
+	struct timeval	lastmeal_tv;
+	struct timeval	lastpstatechange_tv;
 	enum e_pstate	pstate;
 	struct s_fork	*r_fork;
 	struct s_fork	*l_fork;
 	struct s_pinfo	*info;
 }	t_pargs;
 
+size_t	ft_strlen(const char *s);
+char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_ltoa(long ln);
+
 int	ft_isspace(char c);
 int	ft_isdigit(char c);
 int	ft_is_alphasign(const char *str);
-void	log_output(int ts, int x, char *msg);
+//void	log_output(int ts, int x, char *msg);
+void	log_output(long ms, int philo_id, char *msg);
 void	log_state(int ts, int x, int state);
 
 t_pinfo	*create_pinfo(int argc, char **argv);
@@ -106,7 +118,12 @@ int	validate_args(int argc, char **argv);
 
 pthread_t	*create_empty_threads(int n);
 void	free_fork_arr(t_fork **fork_arr);
-t_fork	*create_fork(void);
+t_fork	*create_fork(int fid);
 t_fork	**create_fork_arr(int n);
 void	print_pinfo(t_pinfo *pinfo);
+int get_fork_if_possible(t_fork **rfork, t_fork **lfork, t_pargs *pargs);
+int put_fork_if_possible(t_fork **rfork, t_fork **lfork, t_pargs *pargs);
+
+char	*tv2str(t_tv tv);
+void	log_output_tv(t_tv curtv, t_tv initv, int philo_id, char *msg);
 #endif

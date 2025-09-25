@@ -5,7 +5,7 @@ GCC = gcc -g
 OBJDIR = ./objs
 SRCDIR = ./srcs
 
-SRCS = main.c ft_atoi.c ft_log.c ft_types.c validation.c pinfo.c create_mutex.c create_threads.c putils.c
+SRCS = main.c ft_atoi.c ft_log.c ft_types.c validation.c pinfo.c create_mutex.c create_threads.c putils.c ft_strjoin.c ft_strlen.c ft_ltoa.c
 
 OBJS = $(addprefix $(OBJDIR)/, $(SRCS:.c=.o))
 
