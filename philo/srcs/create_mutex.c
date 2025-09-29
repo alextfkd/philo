@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 01:41:10 by marvin            #+#    #+#             */
-/*   Updated: 2025/09/25 07:57:23 by marvin           ###   ########.fr       */
+/*   Updated: 2025/09/26 09:36:35 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ int get_fork_if_possible(t_fork **rfork, t_fork **lfork, t_pargs *pargs)
 		(*lfork)->fstate = FORK_OCCUPIED;
 		//write(1, "getfork is DONE", 7);
 		res = 1;
+		takefork_and_log(pargs);
 	}
 	if ((*rfork)->fid > (*lfork)->fid)
 	{

@@ -6,11 +6,40 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/20 13:17:27 by marvin            #+#    #+#             */
-/*   Updated: 2025/09/25 09:56:01 by marvin           ###   ########.fr       */
+/*   Updated: 2025/09/26 15:20:27 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+char	*create_id_msg(int id, char *msg)
+{
+	char	*strid;
+	char	*space_strid;
+	char	*space_strid_space;
+	char	*s3_msg;
+	char	*s3_msgnl;
+
+	strid = ft_itoa(id);
+	if (strid == NULL)
+		return (NULL);
+	space_strid = ft_strjoin(" ", strid);
+	if (space_strid == NULL)
+		return (free(strid), NULL);
+	free(strid);
+	space_strid_space = ft_strjoin(space_strid, " ");
+	if (space_strid_space == NULL)
+		return (free(space_strid), NULL);
+	free(space_strid);
+	s3_msg = ft_strjoin(space_strid_space, msg);
+	if (s3_msg == NULL)
+		return (free(space_strid_space), NULL);
+	s3_msgnl = ft_strjoin(s3_msg, "\n");
+	if (s3_msg == NULL)
+		return (free(s3_msg), NULL);
+	free(s3_msg);
+	return (s3_msgnl);
+}
 
 t_pargs	*create_pargs(int id, t_pinfo *info)
 {
@@ -22,132 +51,99 @@ t_pargs	*create_pargs(int id, t_pinfo *info)
 	if (pargs == NULL)
 		return (NULL);
 	pargs->id = id;
-	pargs->initial_flag = 1;
 	pargs->info = info;
 	gettimeofday(&(pargs->lastmeal_tv), NULL);
+	pargs->pstatemodified_tv.tv_sec = pargs->lastmeal_tv.tv_sec;
+	pargs->pstatemodified_tv.tv_usec = pargs->lastmeal_tv.tv_usec;
 	pargs->l_fork = NULL;
 	pargs->r_fork = NULL;
-	pargs->pstate = PHILO_READY;
-	pargs->any_philo_died = NULL;
+	pargs->initial_flag = 1;
+	pargs->msg_died = create_id_msg(id, LOG_DIED);
+	pargs->msg_eat = create_id_msg(id, LOG_EATSTART);
+	pargs->msg_sleep = create_id_msg(id, LOG_SLEEPSTART);
+	pargs->msg_think = create_id_msg(id, LOG_THINKSTART);
+	pargs->msg_fork = create_id_msg(id, LOG_TAKEFORK);
+	pargs->pstate = PHILO_WAITING_FOR_START;
 	return (pargs);
 }
 
-t_tv	get_tv(void)
+
+int	is_philo_died(t_pargs **pargs)
 {
-	t_tv	tv;
-
-	gettimeofday(&tv, NULL);
-	return (tv);
-}
-
-// returns tv1 - tv2 in usec;
-time_t	subtract_tv_as_usec(t_tv tv1, t_tv tv2)
-{
-	t_tv	tv_res;
-	time_t	res;
-
-	if (tv1.tv_sec >= tv2.tv_sec && tv1.tv_usec >= tv2.tv_usec)
-	{
-		tv_res.tv_sec = tv1.tv_sec - tv2.tv_sec;
-		tv_res.tv_usec = tv1.tv_usec - tv2.tv_usec;
-	}
-	else if (tv1.tv_sec >= tv2.tv_sec && tv1.tv_usec < tv2.tv_usec)
-	{
-		tv_res.tv_sec = tv1.tv_sec - tv2.tv_sec - 1;
-		tv_res.tv_usec = tv1.tv_usec - tv2.tv_usec + 1000000;
-	}
-	else
-		return (long)(-1);
-	res = (tv_res.tv_sec % 1000) * 1000000 + tv_res.tv_usec;
-	return (res);
-}
-
-time_t	subtract_tv_as_msec(t_tv tv1, t_tv tv2)
-{
-	t_tv	tv_res;
-	time_t	res;
-
-	if (tv1.tv_sec >= tv2.tv_sec && tv1.tv_usec >= tv2.tv_usec)
-	{
-		tv_res.tv_sec = tv1.tv_sec - tv2.tv_sec;
-		tv_res.tv_usec = tv1.tv_usec - tv2.tv_usec;
-	}
-	else if (tv1.tv_sec >= tv2.tv_sec && tv1.tv_usec < tv2.tv_usec)
-	{
-		tv_res.tv_sec = tv1.tv_sec - tv2.tv_sec - 1;
-		tv_res.tv_usec = tv1.tv_usec - tv2.tv_usec + 1000000;
-	}
-	else
-		return (long)(-1);
-	res = (tv_res.tv_sec % 1000) * 1000 + tv_res.tv_usec / 1000;
-	return (res);
+	if (elapsed_us(get_tv(), (*pargs)->info->start_tv) > (*pargs)->info->uttd)
+		return (1);
+	return (0);
 }
 
 int	check_if_alive(t_pargs **pargs)
 {
-	//(void)pargs;
-	log_output_tv(get_tv(), (*pargs)->info->start_tv, (*pargs)->id, LOG_DIED);
-	if (subtract_tv_as_msec(get_tv(), (*pargs)->lastmeal_tv) > ((*pargs)->info->ttd))
+	if (elapsed_us(get_tv(), (*pargs)->lastmeal_tv) > ((*pargs)->info->uttd))
 	{
-		log_output(subtract_tv_as_msec(get_tv(), (*pargs)->info->start_tv), (*pargs)->id, LOG_DIED);
-		//write(1, "died\n", 5);
-		(*pargs)->pstate = PHILO_DIED;
+		statechange_and_log_died(*pargs);
 		return (0);
 	}
-	usleep(1000);
 	//log_output(subtract_tv_as_msec(get_tv(), (*pargs)->info->start_tv), (*pargs)->id, LOG_EATSTART);
-	return (0);
+	return (1);
 }
 
 int	died_routine(t_pargs **pargs)
 {
-	write(1, "died\n", 5);
-	log_output(subtract_tv_as_msec(get_tv(), (*pargs)->lastmeal_tv) > ((*pargs)->info->ttd), (*pargs)->id, LOG_DIED);
-	//usleep(1000);
+	statechange_and_log_died(*pargs);
 	return (0);
 }
 int	eating_routine(t_pargs **pargs)
 {
-	if (subtract_tv_as_msec(get_tv(), (*pargs)->lastpstatechange_tv) > ((*pargs)->info->tte))
+	if (elapsed_us(get_tv(), (*pargs)->pstatemodified_tv) > ((*pargs)->info->utte))
 	{
 		put_fork_if_possible(&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
-		log_output(subtract_tv_as_msec(get_tv(), (*pargs)->info->start_tv), (*pargs)->id, LOG_SLEEPSTART);
-		(*pargs)->pstate = PHILO_SLEEPING;
-		gettimeofday(&((*pargs)->lastpstatechange_tv), NULL);
+		statechange_and_log_sleep(*pargs);
+		return (0);
 	}
+	usleep(1); // 失敗した場合、少し待つ
 	return (0);
 }
-int	thinking_routine(t_pargs **pargs)
+
+int	initial_routine(t_pargs **pargs)
 {
-	//printf("thinking, id -> %d, rfork %d, lfork %d\n", (*pargs)->id, (*pargs)->r_fork->fid, (*pargs)->l_fork->fid);
+	if ((*pargs)->id % 2 == 0)
+		usleep(500);
+		//usleep(500 * ((*pargs)->id / 2));
 	if (get_fork_if_possible(&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs) == 1)
 	{
-		log_output(subtract_tv_as_msec(get_tv(), (*pargs)->info->start_tv), (*pargs)->id, LOG_TAKEFORK);
-		log_output(subtract_tv_as_msec(get_tv(), (*pargs)->info->start_tv), (*pargs)->id, LOG_EATSTART);
-		(*pargs)->pstate = PHILO_EATING;
-		gettimeofday(&((*pargs)->lastmeal_tv), NULL);
-		(*pargs)->lastpstatechange_tv.tv_sec = (*pargs)->lastmeal_tv.tv_sec;
-		(*pargs)->lastpstatechange_tv.tv_usec = (*pargs)->lastmeal_tv.tv_usec;
+		statechange_and_log_eat(*pargs);
 	}
 	else
 	{
-		if ((*pargs)->initial_flag == 1)
-			log_output(subtract_tv_as_msec(get_tv(), (*pargs)->info->start_tv), (*pargs)->id, LOG_THINKSTART);
-	    usleep(100); // 失敗した場合、少し待つ
+		statechange_and_log_think(*pargs);
+	    usleep(10); // 失敗した場合、少し待つ
+	}
+	return (0);
+}
+
+int	thinking_routine(t_pargs **pargs)
+{
+	if (get_fork_if_possible(&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs) == 1)
+	{
+		statechange_and_log_eat(*pargs);
+	}
+	else
+	{
+	    usleep(10); // 失敗した場合、少し待つ
 	}
 	(*pargs)->initial_flag = 0;
 	return (0);
 }
+
 int	sleeping_routine(t_pargs **pargs)
 {
-	if (subtract_tv_as_msec(get_tv(), (*pargs)->lastpstatechange_tv) > ((*pargs)->info->tts))
+	if (elapsed_us(get_tv(), (*pargs)->pstatemodified_tv) > ((*pargs)->info->utts))
 	{
-		log_output(subtract_tv_as_msec(get_tv(), (*pargs)->info->start_tv), (*pargs)->id, LOG_THINKSTART);
-		(*pargs)->pstate = PHILO_THINKING;
-		gettimeofday(&((*pargs)->lastpstatechange_tv), NULL);
+		statechange_and_log_think(*pargs);
+		thinking_routine(pargs);
 	}
 	return (0);
 }
+
 int	failure_routine(t_pargs **pargs)
 {
 	(void)pargs;
@@ -158,6 +154,8 @@ void	loop_routine(t_pargs **pargs)
 {
 	if ((*pargs)->pstate == PHILO_DIED) 
 		died_routine(pargs);
+	else if ((*pargs)->pstate == PHILO_INITIAL_STATE) 
+		initial_routine(pargs);
 	else if ((*pargs)->pstate == PHILO_EATING) 
 		eating_routine(pargs);
 	else if ((*pargs)->pstate == PHILO_THINKING) 
@@ -168,7 +166,32 @@ void	loop_routine(t_pargs **pargs)
 		failure_routine(pargs);
 	else
 		failure_routine(pargs);
-	check_if_alive(pargs);
+	if (check_if_alive(pargs) == 0)
+		return ;
+	//usleep(10);
+}
+
+t_all_philo_sign	check_all_sign_from_info(t_pinfo *info)
+{
+	t_all_philo_sign	res;
+
+	pthread_mutex_lock(&(info->all_philo_sign_mutex));
+	res = info->all_philo_sign;
+	pthread_mutex_unlock(&(info->all_philo_sign_mutex));
+	return (res);
+}
+
+t_all_philo_sign	check_all_sign(t_pargs *pargs)
+{
+	return ((check_all_sign_from_info(pargs->info)));
+}
+
+void	modify_all_sign(t_pargs **pargs, t_all_philo_sign sign)
+{
+	pthread_mutex_lock(&((*pargs)->info->all_philo_sign_mutex));
+	(*pargs)->info->all_philo_sign = sign;
+	pthread_mutex_unlock(&((*pargs)->info->all_philo_sign_mutex));
+	return ;
 }
 
 //int	start_routine(t_pargs *pargs)
@@ -182,25 +205,52 @@ void	*start_routine(void *args)
 	printf("THREAD: id -> [%d]\nright fork ptr -> %p\nleft fork ptr -> %p\n",
 		pargs->id, pargs->r_fork, pargs->l_fork);
 	printf("start_routine, id -> %d, rfork %d, lfork %d\n", (pargs)->id, (pargs)->r_fork->fid, (pargs)->l_fork->fid);
-	pargs->pstate = PHILO_READY;
-	while (pargs->info->start_sign == 0)
+	pargs->pstate = PHILO_WAITING_FOR_START;
+	while (check_all_sign(pargs) == ALL_PHILO_WAIT_FOR_START)
 	{
-		usleep(10);
-		//loop_routine(&pargs);
+		usleep(5);
 	}
 	gettimeofday(&(pargs->info->start_tv), NULL);
-	//tv2str(pargs->info->start_tv);
 	pargs->lastmeal_tv.tv_sec = pargs->info->start_tv.tv_sec;
 	pargs->lastmeal_tv.tv_usec = pargs->info->start_tv.tv_usec;
-	*(pargs->any_philo_died) = 0;
-	pargs->pstate = PHILO_THINKING;
+	pargs->pstate = PHILO_INITIAL_STATE;
 	//msleep(100 * pargs->id);
-	while (pargs->pstate != PHILO_DIED && pargs->pstate != PHILO_FAILURE && *(pargs->any_philo_died) == 0)
+	while (pargs->pstate != PHILO_DIED && pargs->pstate != PHILO_FAILURE)
 	{
+		if (check_all_sign(pargs) == ANY_PHILO_DIED)
+			break ;
 		loop_routine(&pargs);
 	}
-	*(pargs->any_philo_died) = 1;
+	modify_all_sign(&pargs, ANY_PHILO_DIED);
 	//printf("id %d pargs->info->tv.tv_usec %ld\n", pargs->id, get_us_ts() - pargs->info->tv.tv_usec);
+	return (NULL);
+}
+
+void	*log_routine(void *args)
+{
+	t_pinfo	*info;
+	
+	info = (t_pinfo *)args;
+	while (check_all_sign_from_info(info) == ALL_PHILO_WAIT_FOR_START)
+	{
+		usleep(100);
+	}
+	while (check_all_sign_from_info(info) == ALL_PHILO_LIVE)
+	{
+		pthread_mutex_lock(&(info->log_mutex));
+		write(1, info->log_buf, ft_strlen(info->log_buf));
+		free(info->log_buf);
+		info->log_buf = (char *)malloc(sizeof(char) * 1);
+		info->log_buf[0] = '\0';
+		pthread_mutex_unlock(&(info->log_mutex));
+		usleep(100);
+	}
+	pthread_mutex_lock(&(info->log_mutex));
+	write(1, info->log_buf, ft_strlen(info->log_buf));
+	free(info->log_buf);
+	//info->log_buf = (char *)malloc(sizeof(char) * 1);
+	//info->log_buf[0] = '\0';
+	pthread_mutex_unlock(&(info->log_mutex));
 	return (NULL);
 }
 
@@ -238,12 +288,10 @@ t_pargs	**create_pargs_arr(int n, t_pinfo *info, t_fork **fork_arr)
 	t_pargs		*pargs;
 	int			i;
 	int			id;
-	int			philo_died_flag;
 	
 	if (n <= 0 || info == NULL)
 		return (NULL);
 	pargs_arr = create_empty_pargs_arr(n + 1);
-	philo_died_flag = 0;
 	if (pargs_arr == NULL)
 		return (NULL);
 	i = 0;
@@ -251,7 +299,6 @@ t_pargs	**create_pargs_arr(int n, t_pinfo *info, t_fork **fork_arr)
 	{
 		id = i + 1;
 		pargs = create_pargs(id, info);
-		pargs->any_philo_died = &philo_died_flag;
 		pargs->r_fork = (fork_arr[i]);
 		if (n > 1)
 			pargs->l_fork = (fork_arr[(i + n - 1) % n]);
@@ -285,6 +332,7 @@ pthread_t	*create_pthreads_arr(int n, t_pargs **pargs)
 int	main(int argc, char **argv)
 {
 	pthread_t	*threads;
+	pthread_t	log_thread;
 	t_pargs		**pargs_arr;
 	t_pinfo		*pinfo;
 	int			i;
@@ -292,7 +340,6 @@ int	main(int argc, char **argv)
 	pinfo = create_pinfo(argc, argv);
 	if (pinfo == NULL)
 		return (1);
-	pinfo->start_sign = 0;
 	print_pinfo(pinfo);
 
 	t_fork **fork_arr;
@@ -305,14 +352,20 @@ int	main(int argc, char **argv)
 		i++;
 	}
 	pargs_arr = create_pargs_arr(pinfo->n_philo, pinfo, fork_arr);
+		
+	pthread_create(&(log_thread), NULL, log_routine, pinfo);
 	threads = create_pthreads_arr(pinfo->n_philo, pargs_arr);
-	pinfo->start_sign = 1;
+	usleep(300);
+	pthread_mutex_lock(&(pinfo->all_philo_sign_mutex));
+	pinfo->all_philo_sign = ALL_PHILO_LIVE;
+	pthread_mutex_unlock(&(pinfo->all_philo_sign_mutex));
 	i = 0;
 	while (i < pinfo->n_philo)
 	{
 		pthread_join(threads[i++], NULL);
 		//pthread_detach(threads[i++]);
 	}
+	pthread_join(log_thread, NULL);
 	free_pargs_arr(pargs_arr);
 	free(pinfo);
 	free(threads);
