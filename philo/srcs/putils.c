@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 07:47:20 by marvin            #+#    #+#             */
-/*   Updated: 2025/09/22 07:47:51 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/02 16:01:30 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,4 +24,46 @@ void	print_pinfo(t_pinfo *pinfo)
 	printf("time to eat:   %d\n", pinfo->tte);
 	printf("time to sleep: %d\n", pinfo->tts);
 	printf("n must eat:    %d\n", pinfo->must_eat);
+}
+
+void	free_str_set_null(char *str)
+{
+	if (str != NULL)
+	{
+		free(str);
+		str = NULL;
+	}
+	return ;
+}
+
+void	free_pargs(t_pargs *pargs)
+{
+	if (pargs == NULL)
+		return ;
+	if (pargs->msg_died != NULL)
+		free(pargs->msg_died);
+	if (pargs->msg_eat != NULL)
+		free(pargs->msg_eat);
+	if (pargs->msg_fork != NULL)
+		free(pargs->msg_fork);
+	if (pargs->msg_sleep != NULL)
+		free(pargs->msg_sleep);
+	if (pargs->msg_think != NULL)
+		free(pargs->msg_think);
+	free(pargs);
+}
+
+void	free_pargs_arr(t_pargs **pargs_arr)
+{
+	int	i;
+
+	if (pargs_arr == NULL)
+		return ;
+	i = 0;
+	while (pargs_arr[i] != NULL)
+	{
+		free_pargs(pargs_arr[i]);
+		i++;
+	}
+	free(pargs_arr);
 }

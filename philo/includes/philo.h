@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 00:30:49 by marvin            #+#    #+#             */
-/*   Updated: 2025/09/26 13:31:13 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/02 16:33:48 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,58 +33,43 @@
 # define LOG_THINKSTART "is thinking"
 # define LOG_DIED "died"
 
-typedef struct timeval t_tv;
+typedef struct timeval	t_tv;
 
-typedef enum	e_all_philo_sign{
+typedef enum e_all_philo_alart
+{
 	ALL_PHILO_WAIT_FOR_START,
 	ALL_PHILO_LIVE,
 	ANY_PHILO_DIED,
-	ANY_PHILO_FAILED
-}	t_all_philo_sign;
-
-
-/*
-- number_of_philosophers:
-	The number of philosophers and also the number of forks.
-- time_to_die (in milliseconds):
-	If a philosopher has not started eating within time_to_die
-	milliseconds since the start of their last meal or the start of the
-	simulation, they die.
-- time_to_eat (in milliseconds):
-	The time it takes for a philosopher to eat.
-	During that time, they will need to hold two forks.
-- time_to_sleep (in milliseconds):
-	The time a philosopher will spend sleeping.
-- number_of_times_each_philosopher_must_eat (optional argument):
-	If all philosophers have eaten at least 
-	number_of_times_each_philosopher_must_eat times, the simulation stops.
-	If not specified, the simulation stops when a philosopher dies.
-*/
+	ANY_PHILO_FAILED,
+	ALART_FAILURE,
+}	t_all_philo_alart;
 
 typedef struct s_pinfo
 {
 	int						n_philo;
 	int						ttd;
 	int						tte;
-	int			 			tts;
+	int						tts;
 	int						uttd;
 	int						utte;
-	int 					utts;
+	int						utts;
 	int						must_eat;
-	enum e_all_philo_sign	all_philo_sign;
-	pthread_mutex_t			all_philo_sign_mutex;
-	pthread_mutex_t			log_mutex;
+	enum e_all_philo_alart	all_philo_alart;
+	pthread_mutex_t			*philo_alart_mutex;
+	pthread_mutex_t			*log_mutex;
 	char					*log_buf;
 	struct timeval			start_tv;
 }	t_pinfo;
 
-typedef enum	e_fstate{
+typedef enum e_fstate
+{
 	FORK_AVALIABLE,
 	FORK_OCCUPIED,
 	FORK_FAILURE,
 }	t_fstate;
 
-typedef enum	e_pstate{
+typedef enum e_pstate
+{
 	PHILO_WAITING_FOR_START,
 	PHILO_INITIAL_STATE,
 	PHILO_EATING,
@@ -94,7 +79,8 @@ typedef enum	e_pstate{
 	PHILO_FAILURE,
 }	t_pstate;
 
-typedef struct	s_fork{
+typedef struct s_fork
+{
 	enum e_fstate	fstate;
 	int				*owner;
 	int				fid;
@@ -118,42 +104,66 @@ typedef struct s_pargs
 	struct s_pinfo	*info;
 }	t_pargs;
 
-size_t	ft_strlen(const char *s);
-char	*ft_strjoin(char const *s1, char const *s2);
-char	*ft_ltoa(long ln);
-char	*ft_itoa(int n);
+size_t				ft_strlen(const char *s);
+char				*ft_strjoin(char const *s1, char const *s2);
+char				*ft_ltoa(long ln);
+char				*ft_itoa(int n);
 
-t_tv	get_tv(void);
-int	ft_isspace(char c);
-int	ft_isdigit(char c);
-int	ft_is_alphasign(const char *str);
-//void	log_output(int ts, int x, char *msg);
-void	log_output(long ms, int philo_id, char *msg, pthread_mutex_t *mutex);
-void	log_state(int ts, int x, int state);
+t_tv				get_tv(void);
+int					ft_isspace(char c);
+int					ft_isdigit(char c);
+int					ft_is_alphasign(const char *str);
+void				log_state(int ts, int x, int state);
 
-t_pinfo	*create_pinfo(int argc, char **argv);
+t_pinfo				*create_pinfo(int argc, char **argv);
 
-int	ft_atoi(const char *nptr);
+int					ft_atoi(const char *nptr);
 
-int	validate_args(int argc, char **argv);
+int					validate_args(int argc, char **argv);
 
-pthread_t	*create_empty_threads(int n);
-void	free_fork_arr(t_fork **fork_arr);
-t_fork	*create_fork(int fid);
-t_fork	**create_fork_arr(int n);
-void	print_pinfo(t_pinfo *pinfo);
-int get_fork_if_possible(t_fork **rfork, t_fork **lfork, t_pargs *pargs);
-int put_fork_if_possible(t_fork **rfork, t_fork **lfork, t_pargs *pargs);
+pthread_t			*create_pthreads_arr(int n, t_pargs **pargs);
+void				free_fork_arr(t_fork **fork_arr);
+t_fork				*create_fork(int fid);
+t_fork				**create_fork_arr(int n);
+void				print_pinfo(t_pinfo *pinfo);
+int					get_fork_if_possible(
+						t_fork **rfork,
+						t_fork **lfork,
+						t_pargs *pargs
+						);
+int					put_fork_if_possible(
+						t_fork **rfork,
+						t_fork **lfork,
+						t_pargs *pargs
+						);
 
-char	*tv2str(t_tv tv);
-void	log_output_tv(t_tv curtv, t_tv initv, int philo_id, char *msg);
+char				*tv2str(t_tv tv);
 
-time_t	tv2time_t(t_tv tv);
-time_t	elapsed_us(t_tv current_tv, t_tv initial_tv);
+time_t				tv2time_t(t_tv tv);
+time_t				elapsed_us(t_tv current_tv, t_tv initial_tv);
 
-void	takefork_and_log(t_pargs *pargs);
-void	statechange_and_log_died(t_pargs *pargs);
-void	statechange_and_log_eat(t_pargs *pargs);
-void	statechange_and_log_sleep(t_pargs *pargs);
-void	statechange_and_log_think(t_pargs *pargs);
+void				takefork_and_log(t_pargs *pargs);
+void				statechange_and_log_died(t_pargs *pargs);
+void				statechange_and_log_eat(t_pargs *pargs);
+void				statechange_and_log_sleep(t_pargs *pargs);
+void				statechange_and_log_think(t_pargs *pargs);
+int					lock_fork_mutex(t_fork *rfork, t_fork *lfork);
+void				unlock_fork_mutex(t_fork *rfork, t_fork *lfork);
+int					died_routine(t_pargs **pargs);
+int					eating_routine(t_pargs **pargs);
+int					initial_routine(t_pargs **pargs);
+int					thinking_routine(t_pargs **pargs);
+int					sleeping_routine(t_pargs **pargs);
+void				*start_routine(void *args);
+void				loop_routine(t_pargs **pargs);
+char				*create_id_msg(int id, char *msg);
+void				free_pargs_arr(t_pargs **pargs_arr);
+t_all_philo_alart	check_alart(t_pinfo *info);
+t_all_philo_alart	check_all_sign(t_pargs *pargs);
+void				modify_philo_alart(
+						t_pargs **pargs,
+						t_all_philo_alart alart
+						);
+t_pargs				**create_pargs_arr(int n, t_pinfo *info, t_fork **fork_arr);
+void				free_str_set_null(char *str);
 #endif

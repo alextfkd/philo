@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 14:41:37 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/09/25 09:12:10 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/02 00:48:26 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	char	*arr;
 	size_t	i;
 	size_t	len;
-
 
 	len = ft_strlen(s1) + ft_strlen(s2) + 1;
 	arr = (char *)malloc(sizeof(char) * len);
