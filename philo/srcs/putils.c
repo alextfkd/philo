@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 07:47:20 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/03 23:05:41 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/03 23:14:56 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,12 @@ void	print_pinfo(t_pinfo *pinfo)
 	printf("n must eat:    %d\n", pinfo->must_eat);
 }
 
-void	free_str_set_null(char *str)
+void	free_str_set_null(char **str)
 {
-	if (str != NULL)
+	if (*str != NULL)
 	{
-		free(str);
-		str = NULL;
+		free(*str);
+		*str = NULL;
 	}
 	return ;
 }

@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/20 13:17:27 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/03 23:10:06 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/03 23:15:28 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static void	_log_loop(t_pinfo *info)
 {
 	pthread_mutex_lock(info->log_mutex);
 	write(1, info->log_buf, ft_strlen(info->log_buf));
-	free_str_set_null(info->log_buf);
+	free_str_set_null(&(info->log_buf));
 	info->log_buf = (char *)malloc(sizeof(char) * 1);
 	info->log_buf[0] = '\0';
 	pthread_mutex_unlock(info->log_mutex);
@@ -44,7 +44,7 @@ void	*log_routine(void *args)
 	}
 	else
 		write(1, info->log_buf, ft_strlen(info->log_buf));
-	free_str_set_null(info->log_buf);
+	free_str_set_null(&(info->log_buf));
 	pthread_mutex_unlock(info->log_mutex);
 	return (NULL);
 }

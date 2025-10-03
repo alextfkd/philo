@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 00:30:49 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/03 23:10:39 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/03 23:15:34 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,7 @@ void				modify_philo_alart(
 						);
 void				modify_philo_alart2(t_pinfo *info, t_all_philo_alart alart);
 t_pargs				**create_pargs_arr(int n, t_pinfo *info, t_fork **fork_arr);
-void				free_str_set_null(char *str);
+void				free_str_set_null(char **str);
 int					ft_strncmp(const char *s1, const char *s2, size_t n);
 char				*ft_strnstr(
 						const char *big,

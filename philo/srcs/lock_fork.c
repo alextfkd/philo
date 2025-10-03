@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lock_fork.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 00:40:16 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/02 00:41:20 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/03 23:18:20 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 int	lock_fork_mutex(t_fork *rfork, t_fork *lfork)
 {
+	if (rfork == NULL || lfork == NULL)
+		return (-1);
 	if ((rfork)->fid > (lfork)->fid)
 	{
 		if (pthread_mutex_lock(&((rfork)->mutex)) == -1)
