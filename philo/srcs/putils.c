@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   putils.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 07:47:20 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/02 16:01:30 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/03 23:05:41 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,4 +66,15 @@ void	free_pargs_arr(t_pargs **pargs_arr)
 		i++;
 	}
 	free(pargs_arr);
+}
+
+void	free_pinfo(t_pinfo *pinfo)
+{
+	pthread_mutex_lock(pinfo->log_mutex);
+	if (pinfo->log_buf != NULL)
+		free(pinfo->log_buf);
+	pthread_mutex_unlock(pinfo->log_mutex);
+	free(pinfo->log_mutex);
+	free(pinfo->philo_alart_mutex);
+	free(pinfo);
 }

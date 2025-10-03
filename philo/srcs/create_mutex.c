@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   create_mutex.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 01:41:10 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/02 16:23:58 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/03 23:03:31 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,8 @@ int	get_fork_if_possible(t_fork **rfork, t_fork **lfork, t_pargs *pargs)
 		(*lfork)->owner = &(pargs->id);
 		(*rfork)->fstate = FORK_OCCUPIED;
 		(*lfork)->fstate = FORK_OCCUPIED;
-		res = 1;
 		takefork_and_log(pargs);
+		res = 1;
 	}
 	unlock_fork_mutex(*rfork, *lfork);
 	return (res);

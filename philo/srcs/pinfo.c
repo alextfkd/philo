@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pinfo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 02:15:09 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/02 15:35:24 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/03 23:10:06 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ static int	_info_atoi_argv(t_pinfo *pinfo, char **argv)
 	pinfo->uttd = pinfo->ttd * 1000;
 	pinfo->utte = pinfo->tte * 1000;
 	pinfo->utts = pinfo->tts * 1000;
+	pinfo->pfull = 0;
 	return (0);
 }
 

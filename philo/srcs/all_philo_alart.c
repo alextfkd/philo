@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   all_philo_alart.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 05:39:09 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/02 06:57:00 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/03 22:55:15 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,5 +36,15 @@ void	modify_philo_alart(t_pargs **pargs, t_all_philo_alart alart)
 	pthread_mutex_lock((*pargs)->info->philo_alart_mutex);
 	(*pargs)->info->all_philo_alart = alart;
 	pthread_mutex_unlock((*pargs)->info->philo_alart_mutex);
+	return ;
+}
+
+void	modify_philo_alart2(t_pinfo *info, t_all_philo_alart alart)
+{
+	if (info == NULL)
+		return ;
+	pthread_mutex_lock(info->philo_alart_mutex);
+	info->all_philo_alart = alart;
+	pthread_mutex_unlock(info->philo_alart_mutex);
 	return ;
 }

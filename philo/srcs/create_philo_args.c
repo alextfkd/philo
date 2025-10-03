@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   create_philo_args.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 05:47:59 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/02 05:49:43 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/03 22:07:39 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,12 @@ static t_pargs	*create_pargs(int id, t_pinfo *info)
 		return (NULL);
 	pargs->id = id;
 	pargs->info = info;
+	pargs->n_eat = 0;
 	gettimeofday(&(pargs->lastmeal_tv), NULL);
 	pargs->pstatemodified_tv.tv_sec = pargs->lastmeal_tv.tv_sec;
 	pargs->pstatemodified_tv.tv_usec = pargs->lastmeal_tv.tv_usec;
 	pargs->l_fork = NULL;
 	pargs->r_fork = NULL;
-	pargs->initial_flag = 1;
 	pargs->msg_died = create_id_msg(id, LOG_DIED);
 	pargs->msg_eat = create_id_msg(id, LOG_EATSTART);
 	pargs->msg_sleep = create_id_msg(id, LOG_SLEEPSTART);

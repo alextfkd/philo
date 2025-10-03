@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 00:30:49 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/02 16:33:48 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/03 23:10:39 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ typedef struct s_pinfo
 	int						utte;
 	int						utts;
 	int						must_eat;
+	int						pfull;
 	enum e_all_philo_alart	all_philo_alart;
 	pthread_mutex_t			*philo_alart_mutex;
 	pthread_mutex_t			*log_mutex;
@@ -90,7 +91,7 @@ typedef struct s_fork
 typedef struct s_pargs
 {
 	int				id;
-	int				initial_flag;
+	int				n_eat;
 	char			*msg_sleep;
 	char			*msg_eat;
 	char			*msg_think;
@@ -164,6 +165,14 @@ void				modify_philo_alart(
 						t_pargs **pargs,
 						t_all_philo_alart alart
 						);
+void				modify_philo_alart2(t_pinfo *info, t_all_philo_alart alart);
 t_pargs				**create_pargs_arr(int n, t_pinfo *info, t_fork **fork_arr);
 void				free_str_set_null(char *str);
+int					ft_strncmp(const char *s1, const char *s2, size_t n);
+char				*ft_strnstr(
+						const char *big,
+						const char *little,
+						size_t len
+						);
+void				free_pinfo(t_pinfo *pinfo);
 #endif
