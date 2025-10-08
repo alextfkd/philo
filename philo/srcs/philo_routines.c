@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo_routines.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 00:54:26 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/03 23:02:15 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/08 03:20:19 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,11 @@ int	died_routine(t_pargs **pargs)
 int	eating_routine(t_pargs **pargs)
 {
 	time_t		elapsed_time;
-	static int	utte;
+	int			utte;
 
-	if (utte == 0)
-		utte = (*pargs)->info->utte;
+	pthread_mutex_lock((*pargs)->info->data_mutex);
+	utte = (*pargs)->info->utte;
+	pthread_mutex_unlock((*pargs)->info->data_mutex);
 	elapsed_time = elapsed_us(get_tv(), (*pargs)->pstatemodified_tv);
 	if (elapsed_time > utte)
 	{
@@ -43,9 +44,10 @@ int	eating_routine(t_pargs **pargs)
 
 int	initial_routine(t_pargs **pargs)
 {
+	usleep((400 / (*pargs)->info->n_philo) * ((*pargs)->id) / 2);
 	if ((*pargs)->id % 2 == 0)
 	{
-		usleep(400);
+		usleep(80);
 		(*pargs)->lastmeal_tv = get_tv();
 	}
 	if (get_fork_if_possible(
@@ -65,35 +67,37 @@ int	thinking_routine(t_pargs **pargs)
 {
 	time_t		elapsed_time;
 	time_t		usec_to_die;
-	static int	uttd;
+	int			uttd;
 
-	if (uttd == 0)
-		uttd = (*pargs)->info->uttd;
+	pthread_mutex_lock((*pargs)->info->data_mutex);
+	uttd = (*pargs)->info->uttd;
+	pthread_mutex_unlock((*pargs)->info->data_mutex);
 	elapsed_time = elapsed_us(get_tv(), (*pargs)->lastmeal_tv);
 	usec_to_die = uttd - elapsed_time;
+	if (100 <= usec_to_die)
+		usleep(50);
 	if (get_fork_if_possible(
 			&((*pargs)->r_fork),
 			&((*pargs)->l_fork), *pargs) == 1
 	)
 	{
+		pthread_mutex_lock((*pargs)->info->data_mutex);
 		(*pargs)->n_eat++;
+		pthread_mutex_unlock((*pargs)->info->data_mutex);
 		statechange_and_log_eat(*pargs);
 		return (0);
 	}
-	if (20 < usec_to_die && usec_to_die < 40)
-		usleep(10);
-	if (usec_to_die >= 40)
-		usleep(20);
 	return (0);
 }
 
 int	sleeping_routine(t_pargs **pargs)
 {
 	time_t		elapsed_time;
-	static int	utts;
+	int			utts;
 
-	if (utts == 0)
-		utts = (*pargs)->info->utts;
+	pthread_mutex_lock((*pargs)->info->data_mutex);
+	utts = (*pargs)->info->utts;
+	pthread_mutex_unlock((*pargs)->info->data_mutex);
 	elapsed_time = elapsed_us(get_tv(), (*pargs)->pstatemodified_tv);
 	if (elapsed_time > utts)
 	{

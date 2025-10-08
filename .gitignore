@@ -2,3 +2,4 @@ philo/objs/*.o
 philo/philo
 philo/philo
 philo/philo
+philo/.DS_Store

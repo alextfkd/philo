@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pinfo.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 02:15:09 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/03 23:10:06 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/07 12:10:12 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,10 @@ static int	_set_mutexes(t_pinfo *pinfo)
 		return (-1);
 	pinfo->log_buf[0] = '\0';
 	pinfo->all_philo_alart = ALL_PHILO_WAIT_FOR_START;
+	pinfo->data_mutex = (pthread_mutex_t *)malloc(musize);
+	if (pinfo->data_mutex == NULL)
+		return (-1);
+	pthread_mutex_init(pinfo->data_mutex, NULL);
 	return (0);
 }
 

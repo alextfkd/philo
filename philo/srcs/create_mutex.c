@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   create_mutex.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 01:41:10 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/03 23:03:31 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/07 11:56:49 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	free_fork_arr(t_fork **fork_arr)
 	i = 0;
 	while (fork_arr[i] != NULL)
 	{
-		pthread_mutex_lock(&(fork_arr[i]->mutex));
+		pthread_mutex_destroy(&(fork_arr[i]->mutex));
 		free(fork_arr[i]);
 		i++;
 	}

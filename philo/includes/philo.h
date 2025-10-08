@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 00:30:49 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/03 23:15:34 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/08 04:11:24 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ typedef struct s_pinfo
 	enum e_all_philo_alart	all_philo_alart;
 	pthread_mutex_t			*philo_alart_mutex;
 	pthread_mutex_t			*log_mutex;
+	pthread_mutex_t			*data_mutex;
 	char					*log_buf;
 	struct timeval			start_tv;
 }	t_pinfo;
@@ -175,4 +176,5 @@ char				*ft_strnstr(
 						size_t len
 						);
 void				free_pinfo(t_pinfo *pinfo);
+void				error_msg_on_validation(void);
 #endif

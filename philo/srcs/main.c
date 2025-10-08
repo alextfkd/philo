@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/20 13:17:27 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/03 23:15:28 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/08 04:10:55 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,10 @@ int	main(int argc, char **argv)
 
 	pinfo = create_pinfo(argc, argv);
 	if (pinfo == NULL)
-		return (1);
+	{
+		error_msg_on_validation();
+		exit (1);
+	}
 	fork_arr = create_fork_arr(pinfo->n_philo);
 	pargs_arr = create_pargs_arr(pinfo->n_philo, pinfo, fork_arr);
 	pthread_create(&(log_thread), NULL, log_routine, pinfo);

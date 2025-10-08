@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   all_philo_alart.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 05:39:09 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/03 22:55:15 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/08 03:55:40 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,9 @@ t_all_philo_alart	check_alart(t_pinfo *info)
 	if (info == NULL)
 		return (ALART_FAILURE);
 	pthread_mutex_lock(info->philo_alart_mutex);
+	pthread_mutex_lock(info->data_mutex);
 	res = info->all_philo_alart;
+	pthread_mutex_unlock(info->data_mutex);
 	pthread_mutex_unlock(info->philo_alart_mutex);
 	return (res);
 }
@@ -34,7 +36,9 @@ void	modify_philo_alart(t_pargs **pargs, t_all_philo_alart alart)
 	if (pargs == NULL || *pargs == NULL)
 		return ;
 	pthread_mutex_lock((*pargs)->info->philo_alart_mutex);
+	pthread_mutex_lock((*pargs)->info->data_mutex);
 	(*pargs)->info->all_philo_alart = alart;
+	pthread_mutex_unlock((*pargs)->info->data_mutex);
 	pthread_mutex_unlock((*pargs)->info->philo_alart_mutex);
 	return ;
 }
@@ -44,7 +48,9 @@ void	modify_philo_alart2(t_pinfo *info, t_all_philo_alart alart)
 	if (info == NULL)
 		return ;
 	pthread_mutex_lock(info->philo_alart_mutex);
+	pthread_mutex_lock(info->data_mutex);
 	info->all_philo_alart = alart;
+	pthread_mutex_unlock(info->data_mutex);
 	pthread_mutex_unlock(info->philo_alart_mutex);
 	return ;
 }
