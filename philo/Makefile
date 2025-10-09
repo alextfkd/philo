@@ -1,6 +1,5 @@
 NAME = philo
 CC = cc -g
-GCC = gcc -g
 
 OBJDIR = ./objs
 SRCDIR = ./srcs
@@ -12,7 +11,6 @@ OBJS = $(addprefix $(OBJDIR)/, $(SRCS:.c=.o))
 CFLAGS = -Wall -Wextra -Werror
 IFLAGS = -Iincludes
 
-#VPATH = $(SRCDIR):$(SRCDIR)/ft_cdlst:$(SRCDIR)/ps_wrap:$(SRCDIR)/stacks:$(SRCDIR)/ps_utils:$(SRCDIR)/sort
 VPATH = $(SRCDIR)
 
 all: $(OBJDIR) $(NAME)
@@ -33,10 +31,11 @@ $(OBJDIR)/%.o: %.c
 
 clean: 
 	rm -f $(OBJS)
+	rm -fr $(OBJDIR)
 
 fclean: clean
 	rm -f $(NAME) 
 
 re: fclean all
 
-.PHONY: all clean fclean re bonus objs 
+.PHONY: all clean fclean re bonus 
