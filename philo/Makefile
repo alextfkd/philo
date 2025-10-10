@@ -4,7 +4,7 @@ CC = cc -g
 OBJDIR = ./objs
 SRCDIR = ./srcs
 
-SRCS = main.c ft_atoi.c ft_log.c ft_types.c validation.c pinfo.c create_mutex.c create_threads.c putils.c ft_strjoin.c ft_strlen.c ft_ltoa.c ft_itoa.c lock_fork.c philo_routines.c philo_loop.c create_log_msg.c all_philo_alart.c create_philo_args.c tv_utils.c ft_strnstr.c ft_strncmp.c
+SRCS = main.c ft_atoi.c philo_log.c fork_log.c ft_types.c validation.c pinfo.c create_mutex.c create_threads.c putils.c ft_strjoin.c ft_strlen.c ft_ltoa.c ft_itoa.c lock_fork.c philo_routines.c philo_loop.c create_log_msg.c common_state.c create_philo_args.c tv_utils.c ft_strnstr.c ft_strncmp.c ft_log_utils.c
 
 OBJS = $(addprefix $(OBJDIR)/, $(SRCS:.c=.o))
 

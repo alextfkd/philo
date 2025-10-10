@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 02:47:26 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/09 00:29:50 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 03:52:25 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@ static int	ft_check_overflow(const char *nptr)
 			sign *= -1;
 		nptr++;
 	}
-	if (sign == -1)
-		return (1);
 	while (ft_isdigit(*nptr) != 0)
 	{
 		if (sign == 1 && res > INT_MAX / 10)
@@ -35,6 +33,8 @@ static int	ft_check_overflow(const char *nptr)
 			return (1);
 		res = 10 * res + (*nptr++ - '0');
 	}
+	if (sign == -1 || res > INT_MAX / 1000)
+		return (1);
 	return (0);
 }
 
@@ -71,5 +71,6 @@ void	error_msg_on_validation(void)
 	printf("time_to_eat ");
 	printf("time_to_sleep ");
 	printf("[number_of_times_each_philosopher_must_eat]\n");
-	printf("Please ensure that each argument is a positive integer.\n");
+	printf("Please ensure that each argument is a positive integer ");
+	printf("between 1 and 2147483 (INT_MAX / 1000).\n");
 }

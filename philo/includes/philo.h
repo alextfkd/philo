@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 00:30:49 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/08 04:11:24 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 06:29:14 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,14 +35,14 @@
 
 typedef struct timeval	t_tv;
 
-typedef enum e_all_philo_alart
+typedef enum e_common_state
 {
-	ALL_PHILO_WAIT_FOR_START,
+	WAITING_FOR_START,
 	ALL_PHILO_LIVE,
-	ANY_PHILO_DIED,
+	STOP_PHILO_SIM,
 	ANY_PHILO_FAILED,
 	ALART_FAILURE,
-}	t_all_philo_alart;
+}	t_common_state;
 
 typedef struct s_pinfo
 {
@@ -55,12 +55,11 @@ typedef struct s_pinfo
 	int						utts;
 	int						must_eat;
 	int						pfull;
-	enum e_all_philo_alart	all_philo_alart;
-	pthread_mutex_t			*philo_alart_mutex;
-	pthread_mutex_t			*log_mutex;
-	pthread_mutex_t			*data_mutex;
+	enum e_common_state		common_state;
 	char					*log_buf;
 	struct timeval			start_tv;
+	pthread_mutex_t			*data_mutex;
+	pthread_mutex_t			*log_mutex;
 }	t_pinfo;
 
 typedef enum e_fstate
@@ -91,6 +90,7 @@ typedef struct s_fork
 
 typedef struct s_pargs
 {
+	int				n_philo;
 	int				id;
 	int				n_eat;
 	char			*msg_sleep;
@@ -98,6 +98,10 @@ typedef struct s_pargs
 	char			*msg_think;
 	char			*msg_fork;
 	char			*msg_died;
+	int				uttd;
+	int				utte;
+	int				utts;
+	struct timeval	start_tv;
 	struct timeval	lastmeal_tv;
 	struct timeval	pstatemodified_tv;
 	enum e_pstate	pstate;
@@ -144,11 +148,11 @@ char				*tv2str(t_tv tv);
 time_t				tv2time_t(t_tv tv);
 time_t				elapsed_us(t_tv current_tv, t_tv initial_tv);
 
-void				takefork_and_log(t_pargs *pargs);
-void				statechange_and_log_died(t_pargs *pargs);
-void				statechange_and_log_eat(t_pargs *pargs);
-void				statechange_and_log_sleep(t_pargs *pargs);
-void				statechange_and_log_think(t_pargs *pargs);
+int					takefork_and_log(t_pargs *pargs);
+int					statechange_and_log_died(t_pargs *pargs);
+int					statechange_and_log_eat(t_pargs *pargs);
+int					statechange_and_log_sleep(t_pargs *pargs);
+int					statechange_and_log_think(t_pargs *pargs);
 int					lock_fork_mutex(t_fork *rfork, t_fork *lfork);
 void				unlock_fork_mutex(t_fork *rfork, t_fork *lfork);
 int					died_routine(t_pargs **pargs);
@@ -156,17 +160,16 @@ int					eating_routine(t_pargs **pargs);
 int					initial_routine(t_pargs **pargs);
 int					thinking_routine(t_pargs **pargs);
 int					sleeping_routine(t_pargs **pargs);
-void				*start_routine(void *args);
-void				loop_routine(t_pargs **pargs);
+void				*philo_thread_action(void *args);
 char				*create_id_msg(int id, char *msg);
 void				free_pargs_arr(t_pargs **pargs_arr);
-t_all_philo_alart	check_alart(t_pinfo *info);
-t_all_philo_alart	check_all_sign(t_pargs *pargs);
-void				modify_philo_alart(
-						t_pargs **pargs,
-						t_all_philo_alart alart
+t_common_state		get_cstate(t_pinfo *info);
+t_common_state		acquire_common_state(t_pargs *pargs);
+void				modify_common_state(
+						t_pargs *pargs,
+						t_common_state cstate
 						);
-void				modify_philo_alart2(t_pinfo *info, t_all_philo_alart alart);
+void				modify_common_state2(t_pinfo *info, t_common_state cstate);
 t_pargs				**create_pargs_arr(int n, t_pinfo *info, t_fork **fork_arr);
 void				free_str_set_null(char **str);
 int					ft_strncmp(const char *s1, const char *s2, size_t n);
@@ -176,5 +179,8 @@ char				*ft_strnstr(
 						size_t len
 						);
 void				free_pinfo(t_pinfo *pinfo);
+void				free_pargs(t_pargs *pargs);
 void				error_msg_on_validation(void);
+char				*create_ts_id_msg(t_pargs *pargs, t_tv tv, char *msg);
+int					append_log_buf(t_pargs *pargs, char *ts_id_msg);
 #endif

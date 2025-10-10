@@ -1,56 +1,48 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   all_philo_alart.c                                  :+:      :+:    :+:   */
+/*   common_state.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 05:39:09 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/08 03:55:40 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 01:51:14 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-t_all_philo_alart	check_alart(t_pinfo *info)
+t_common_state	get_cstate(t_pinfo *info)
 {
-	t_all_philo_alart	res;
+	t_common_state	res;
 
 	if (info == NULL)
 		return (ALART_FAILURE);
-	pthread_mutex_lock(info->philo_alart_mutex);
 	pthread_mutex_lock(info->data_mutex);
-	res = info->all_philo_alart;
+	res = info->common_state;
 	pthread_mutex_unlock(info->data_mutex);
-	pthread_mutex_unlock(info->philo_alart_mutex);
 	return (res);
 }
 
-t_all_philo_alart	check_all_sign(t_pargs *pargs)
+t_common_state	acquire_common_state(t_pargs *pargs)
 {
-	return ((check_alart(pargs->info)));
+	return ((get_cstate(pargs->info)));
 }
 
-void	modify_philo_alart(t_pargs **pargs, t_all_philo_alart alart)
+void	modify_common_state(t_pargs *pargs, t_common_state cstate)
 {
-	if (pargs == NULL || *pargs == NULL)
+	if (pargs == NULL)
 		return ;
-	pthread_mutex_lock((*pargs)->info->philo_alart_mutex);
-	pthread_mutex_lock((*pargs)->info->data_mutex);
-	(*pargs)->info->all_philo_alart = alart;
-	pthread_mutex_unlock((*pargs)->info->data_mutex);
-	pthread_mutex_unlock((*pargs)->info->philo_alart_mutex);
+	modify_common_state2((*pargs).info, cstate);
 	return ;
 }
 
-void	modify_philo_alart2(t_pinfo *info, t_all_philo_alart alart)
+void	modify_common_state2(t_pinfo *info, t_common_state cstate)
 {
 	if (info == NULL)
 		return ;
-	pthread_mutex_lock(info->philo_alart_mutex);
 	pthread_mutex_lock(info->data_mutex);
-	info->all_philo_alart = alart;
+	info->common_state = cstate;
 	pthread_mutex_unlock(info->data_mutex);
-	pthread_mutex_unlock(info->philo_alart_mutex);
 	return ;
 }

@@ -3,52 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   philo_loop.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: tkatsuma <tkatsuma@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 01:24:07 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/03 23:04:21 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/10 06:28:08 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static int	check_if_alive(t_pargs **pargs)
-{
-	if (elapsed_us(get_tv(), (*pargs)->lastmeal_tv) > ((*pargs)->info->uttd))
-	{
-		statechange_and_log_died(*pargs);
-		return (0);
-	}
-	return (1);
-}
+static int	if_philo_starved(t_pargs **pargs);
+static int	philo_loop_routine(t_pargs **pargs);
+static void	sync_start_tv(t_pargs *pargs);
 
-static int	failure_routine(t_pargs **pargs)
-{
-	(void)pargs;
-	return (0);
-}
-
-void	loop_routine(t_pargs **pargs)
-{
-	if ((*pargs)->pstate == PHILO_DIED)
-		died_routine(pargs);
-	else if ((*pargs)->pstate == PHILO_INITIAL_STATE)
-		initial_routine(pargs);
-	else if ((*pargs)->pstate == PHILO_EATING)
-		eating_routine(pargs);
-	else if ((*pargs)->pstate == PHILO_THINKING)
-		thinking_routine(pargs);
-	else if ((*pargs)->pstate == PHILO_SLEEPING)
-		sleeping_routine(pargs);
-	else if ((*pargs)->pstate == PHILO_FAILURE)
-		failure_routine(pargs);
-	else
-		failure_routine(pargs);
-	if (check_if_alive(pargs) == 0)
-		return ;
-}
-
-void	*start_routine(void *args)
+void	*philo_thread_action(void *args)
 {
 	t_pargs	*pargs;
 
@@ -56,20 +24,62 @@ void	*start_routine(void *args)
 	if (pargs == NULL)
 		return (NULL);
 	pargs->pstate = PHILO_WAITING_FOR_START;
-	while (check_all_sign(pargs) == ALL_PHILO_WAIT_FOR_START)
-	{
+	while (acquire_common_state(pargs) == WAITING_FOR_START)
 		usleep(5);
-	}
-	gettimeofday(&(pargs->info->start_tv), NULL);
-	pargs->lastmeal_tv.tv_sec = pargs->info->start_tv.tv_sec;
-	pargs->lastmeal_tv.tv_usec = pargs->info->start_tv.tv_usec;
 	pargs->pstate = PHILO_INITIAL_STATE;
-	while (pargs->pstate != PHILO_DIED && pargs->pstate != PHILO_FAILURE)
+	sync_start_tv(pargs);
+	while (pargs->pstate != PHILO_DIED)
 	{
-		if (check_all_sign(pargs) == ANY_PHILO_DIED)
+		if (acquire_common_state(pargs) == STOP_PHILO_SIM)
 			break ;
-		loop_routine(&pargs);
+		else if (pargs->pstate == PHILO_FAILURE)
+			break ;
+		if (philo_loop_routine(&pargs) == 1)
+			break ;
 	}
-	modify_philo_alart(&pargs, ANY_PHILO_DIED);
+	modify_common_state(pargs, STOP_PHILO_SIM);
 	return (NULL);
+}
+
+static void	sync_start_tv(t_pargs *pargs)
+{
+	pthread_mutex_lock(pargs->info->data_mutex);
+	pargs->start_tv = pargs->info->start_tv;
+	pargs->lastmeal_tv = pargs->info->start_tv;
+	pthread_mutex_unlock(pargs->info->data_mutex);
+}
+
+static int	philo_loop_routine(t_pargs **pargs)
+{
+	int	fail_flag;
+
+	fail_flag = 0;
+	if (if_philo_starved(pargs) == 1)
+		return (fail_flag);
+	if ((*pargs)->pstate == PHILO_DIED)
+		fail_flag = died_routine(pargs);
+	else if ((*pargs)->pstate == PHILO_INITIAL_STATE)
+		fail_flag = initial_routine(pargs);
+	else if ((*pargs)->pstate == PHILO_EATING)
+		fail_flag = eating_routine(pargs);
+	else if ((*pargs)->pstate == PHILO_THINKING)
+		fail_flag = thinking_routine(pargs);
+	else if ((*pargs)->pstate == PHILO_SLEEPING)
+		fail_flag = sleeping_routine(pargs);
+	else
+		fail_flag = 1;
+	return (fail_flag);
+}
+
+static int	if_philo_starved(t_pargs **pargs)
+{
+	int	uttd;
+
+	uttd = (*pargs)->uttd;
+	if (elapsed_us(get_tv(), (*pargs)->lastmeal_tv) > uttd)
+	{
+		statechange_and_log_died(*pargs);
+		return (1);
+	}
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 01:41:10 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/07 11:56:49 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 06:27:37 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,11 @@ int	get_fork_if_possible(t_fork **rfork, t_fork **lfork, t_pargs *pargs)
 		(*lfork)->owner = &(pargs->id);
 		(*rfork)->fstate = FORK_OCCUPIED;
 		(*lfork)->fstate = FORK_OCCUPIED;
-		takefork_and_log(pargs);
-		res = 1;
+		res = takefork_and_log(pargs);
+		if (res == 1)
+			res = -1;
+		else
+			res = 1;
 	}
 	unlock_fork_mutex(*rfork, *lfork);
 	return (res);

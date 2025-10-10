@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/20 13:17:27 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/08 04:10:55 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 03:01:57 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,12 @@ void	*log_routine(void *args)
 	char	*pdied;
 
 	info = (t_pinfo *)args;
-	while (check_alart(info) == ALL_PHILO_WAIT_FOR_START)
+	while (get_cstate(info) == WAITING_FOR_START)
 		usleep(100);
-	while (check_alart(info) == ALL_PHILO_LIVE && info->pfull != info->n_philo)
+	while (get_cstate(info) == ALL_PHILO_LIVE && info->pfull != info->n_philo)
 		_log_loop(info);
 	if (info->pfull == info->n_philo)
-		modify_philo_alart2(info, ANY_PHILO_DIED);
+		modify_common_state2(info, STOP_PHILO_SIM);
 	pthread_mutex_lock(info->log_mutex);
 	pdied = ft_strnstr(info->log_buf, "died", ft_strlen(info->log_buf));
 	if (pdied != NULL)
@@ -52,9 +52,10 @@ void	*log_routine(void *args)
 void	start_philo_simulation(int uwait, t_pinfo *pinfo)
 {
 	usleep(uwait);
-	pthread_mutex_lock(pinfo->philo_alart_mutex);
-	pinfo->all_philo_alart = ALL_PHILO_LIVE;
-	pthread_mutex_unlock(pinfo->philo_alart_mutex);
+	pthread_mutex_lock(pinfo->data_mutex);
+	pinfo->common_state = ALL_PHILO_LIVE;
+	pinfo->start_tv = get_tv();
+	pthread_mutex_unlock(pinfo->data_mutex);
 }
 
 void	all_pthread_join(

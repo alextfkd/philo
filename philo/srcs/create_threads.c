@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 01:42:05 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/02 05:34:56 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 01:59:49 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ pthread_t	*create_pthreads_arr(int n, t_pargs **pargs)
 	i = 0;
 	while (i < n)
 	{
-		pthread_create(&(threads[i]), NULL, start_routine, pargs[i]);
+		pthread_create(&(threads[i]), NULL, philo_thread_action, pargs[i]);
 		i++;
 	}
 	return (threads);
