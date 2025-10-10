@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 01:24:07 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/10 06:28:08 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 06:49:47 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ static int	if_philo_starved(t_pargs **pargs)
 	int	uttd;
 
 	uttd = (*pargs)->uttd;
-	if (elapsed_us(get_tv(), (*pargs)->lastmeal_tv) > uttd)
+	if (elapsed_us(get_tv(), (*pargs)->lastmeal_tv) > uttd + 999)
 	{
 		statechange_and_log_died(*pargs);
 		return (1);

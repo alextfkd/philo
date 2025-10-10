@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 01:13:41 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/10 05:31:57 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 06:54:17 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int	statechange_and_log_think(t_pargs *pargs)
 	char	*ts_id_msg;
 
 	tv = get_tv();
-	ts_id_msg = create_ts_id_msg(pargs, tv, pargs->msg_sleep);
+	ts_id_msg = create_ts_id_msg(pargs, tv, pargs->msg_think);
 	if (ts_id_msg == NULL)
 		return (1);
 	if (append_log_buf(pargs, ts_id_msg) != 0)
