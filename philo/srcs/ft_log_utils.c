@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 05:18:09 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/10 06:43:33 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 08:41:37 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int	append_log_buf(t_pargs *pargs, char *ts_id_msg)
 	if (pargs == NULL || pargs->info == NULL || ts_id_msg == NULL)
 		return (1);
 	pthread_mutex_lock(pargs->info->log_mutex);
+	pthread_mutex_lock(pargs->info->data_mutex);
 	if (pargs->info->log_buf == NULL)
 		return (pthread_mutex_unlock(pargs->info->log_mutex), 1);
 	tmp_buf = ft_strjoin(pargs->info->log_buf, ts_id_msg);
@@ -48,6 +49,44 @@ int	append_log_buf(t_pargs *pargs, char *ts_id_msg)
 		return (pthread_mutex_unlock(pargs->info->log_mutex), 1);
 	free_str_set_null(&pargs->info->log_buf);
 	pargs->info->log_buf = tmp_buf;
+	pthread_mutex_unlock(pargs->info->data_mutex);
 	pthread_mutex_unlock(pargs->info->log_mutex);
+	return (0);
+}
+
+void	_log_loop(t_pinfo *info)
+{
+	pthread_mutex_lock(info->log_mutex);
+	write(1, info->log_buf, ft_strlen(info->log_buf));
+	free_str_set_null(&(info->log_buf));
+	info->log_buf = (char *)malloc(sizeof(char) * 1);
+	info->log_buf[0] = '\0';
+	pthread_mutex_unlock(info->log_mutex);
+	usleep(50);
+}
+
+void	*_log_routine(void *args)
+{
+	t_pinfo	*info;
+	char	*pdied;
+
+	info = (t_pinfo *)args;
+	while (get_cstate(info) == WAITING_FOR_START)
+		usleep(100);
+	while (get_cstate(info) == ALL_PHILO_LIVE && info->pfull != info->n_philo)
+		_log_loop(info);
+	if (info->pfull == info->n_philo)
+		modify_common_state2(info, STOP_PHILO_SIM);
+	pthread_mutex_lock(info->log_mutex);
+	pdied = ft_strnstr(info->log_buf, "died", ft_strlen(info->log_buf));
+	if (pdied != NULL)
+	{
+		write(1, info->log_buf, pdied - info->log_buf + 4);
+		write(1, "\n", 1);
+	}
+	else
+		write(1, info->log_buf, ft_strlen(info->log_buf));
+	free_str_set_null(&(info->log_buf));
+	pthread_mutex_unlock(info->log_mutex);
 	return (0);
 }

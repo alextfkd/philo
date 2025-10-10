@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 02:15:09 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/10 06:26:34 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 07:59:10 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 static void	_fill_pinfo_data(t_pinfo *pinfo, int argc, char **argv);
 static int	_set_cstate_data_and_mutex(t_pinfo *pinfo);
 static int	_set_logbuf_and_mutex(t_pinfo *pinfo);
+static int	_create_result_arr(t_pinfo *pinfo, int n);
 
 t_pinfo	*create_pinfo(int argc, char **argv)
 {
@@ -34,6 +35,8 @@ t_pinfo	*create_pinfo(int argc, char **argv)
 		return (free(pinfo), NULL);
 	}
 	_fill_pinfo_data(pinfo, argc, argv);
+	if (_create_result_arr(pinfo, pinfo->n_philo) == -1)
+		return (free(pinfo), NULL);
 	return (pinfo);
 }
 
@@ -86,5 +89,20 @@ static int	_set_logbuf_and_mutex(t_pinfo *pinfo)
 	}
 	pinfo->log_buf[0] = '\0';
 	pthread_mutex_unlock(pinfo->log_mutex);
+	return (0);
+}
+
+static int	_create_result_arr(t_pinfo *pinfo, int n)
+{
+	int	*arr;
+	int	i;
+
+	arr = (int *)malloc(sizeof(int) * (n + 2));
+	if (arr == NULL)
+		return (-1);
+	i = 0;
+	while (i < n + 2)
+		arr[i++] = 0;
+	pinfo->exit_status = arr;
 	return (0);
 }

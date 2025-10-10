@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 00:30:49 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/10 06:29:14 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 08:19:53 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ typedef struct s_pinfo
 	int						uttd;
 	int						utte;
 	int						utts;
+	int						*exit_status;
 	int						must_eat;
 	int						pfull;
 	enum e_common_state		common_state;
@@ -183,4 +184,6 @@ void				free_pargs(t_pargs *pargs);
 void				error_msg_on_validation(void);
 char				*create_ts_id_msg(t_pargs *pargs, t_tv tv, char *msg);
 int					append_log_buf(t_pargs *pargs, char *ts_id_msg);
+void				_log_loop(t_pinfo *info);
+void				*_log_routine(void *args);
 #endif

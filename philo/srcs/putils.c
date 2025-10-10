@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 07:47:20 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/10 03:04:47 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 07:53:19 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,13 +70,19 @@ void	free_pargs_arr(t_pargs **pargs_arr)
 
 void	free_pinfo(t_pinfo *pinfo)
 {
+	if (pinfo == NULL)
+		return ;
 	pthread_mutex_lock(pinfo->log_mutex);
 	if (pinfo->log_buf != NULL)
 		free(pinfo->log_buf);
 	pthread_mutex_unlock(pinfo->log_mutex);
 	pthread_mutex_destroy(pinfo->log_mutex);
 	pthread_mutex_destroy(pinfo->data_mutex);
-	free(pinfo->log_mutex);
-	free(pinfo->data_mutex);
+	if (pinfo->exit_status != NULL)
+		free(pinfo->exit_status);
+	if (pinfo->log_mutex != NULL)
+		free(pinfo->log_mutex);
+	if (pinfo->data_mutex != NULL)
+		free(pinfo->data_mutex);
 	free(pinfo);
 }

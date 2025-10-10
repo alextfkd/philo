@@ -6,50 +6,71 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/20 13:17:27 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/10 03:01:57 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 08:29:13 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	_log_loop(t_pinfo *info)
+static void	_start_philo_simulation(int uwait, t_pinfo *pinfo);
+static void	_all_pthread_join(
+				t_pinfo *pinfo,
+				pthread_t *threads,
+				pthread_t log_thread
+				);
+static int	free_and_exit(
+				t_pargs **pargs_arr,
+				t_fork **fork_arr,
+				pthread_t *p_threads,
+				t_pinfo *pinfo
+				);
+
+int	main(int argc, char **argv)
 {
-	pthread_mutex_lock(info->log_mutex);
-	write(1, info->log_buf, ft_strlen(info->log_buf));
-	free_str_set_null(&(info->log_buf));
-	info->log_buf = (char *)malloc(sizeof(char) * 1);
-	info->log_buf[0] = '\0';
-	pthread_mutex_unlock(info->log_mutex);
-	usleep(50);
+	pthread_t	*p_threads;
+	pthread_t	log_thread;
+	t_pargs		**pargs_arr;
+	t_pinfo		*pinfo;
+	t_fork		**fork_arr;
+
+	pinfo = create_pinfo(argc, argv);
+	if (pinfo == NULL)
+		return (error_msg_on_validation(), 1);
+	fork_arr = create_fork_arr(pinfo->n_philo);
+	if (fork_arr == NULL)
+		return (free_pinfo(pinfo), 1);
+	pargs_arr = create_pargs_arr(pinfo->n_philo, pinfo, fork_arr);
+	pthread_create(&(log_thread), NULL, _log_routine, pinfo);
+	p_threads = create_pthreads_arr(pinfo->n_philo, pargs_arr);
+	_start_philo_simulation(300, pinfo);
+	_all_pthread_join(pinfo, p_threads, log_thread);
+	return (free_and_exit(pargs_arr, fork_arr, p_threads, pinfo));
 }
 
-void	*log_routine(void *args)
+static int	free_and_exit(
+	t_pargs **pargs_arr,
+	t_fork **fork_arr,
+	pthread_t *p_threads,
+	t_pinfo *pinfo
+)
 {
-	t_pinfo	*info;
-	char	*pdied;
+	int	res;
+	int	i;
 
-	info = (t_pinfo *)args;
-	while (get_cstate(info) == WAITING_FOR_START)
-		usleep(100);
-	while (get_cstate(info) == ALL_PHILO_LIVE && info->pfull != info->n_philo)
-		_log_loop(info);
-	if (info->pfull == info->n_philo)
-		modify_common_state2(info, STOP_PHILO_SIM);
-	pthread_mutex_lock(info->log_mutex);
-	pdied = ft_strnstr(info->log_buf, "died", ft_strlen(info->log_buf));
-	if (pdied != NULL)
-	{
-		write(1, info->log_buf, pdied - info->log_buf + 4);
-		write(1, "\n", 1);
-	}
-	else
-		write(1, info->log_buf, ft_strlen(info->log_buf));
-	free_str_set_null(&(info->log_buf));
-	pthread_mutex_unlock(info->log_mutex);
-	return (NULL);
+	i = 0;
+	res = 0;
+	while (i < pinfo->n_philo + 1)
+		res += pinfo->exit_status[i++];
+	free_pargs_arr(pargs_arr);
+	free_fork_arr(fork_arr);
+	free_pinfo(pinfo);
+	free(p_threads);
+	if (res > 0)
+		return (1);
+	return (0);
 }
 
-void	start_philo_simulation(int uwait, t_pinfo *pinfo)
+static void	_start_philo_simulation(int uwait, t_pinfo *pinfo)
 {
 	usleep(uwait);
 	pthread_mutex_lock(pinfo->data_mutex);
@@ -58,7 +79,7 @@ void	start_philo_simulation(int uwait, t_pinfo *pinfo)
 	pthread_mutex_unlock(pinfo->data_mutex);
 }
 
-void	all_pthread_join(
+static void	_all_pthread_join(
 	t_pinfo *pinfo,
 	pthread_t *threads,
 	pthread_t log_thread
@@ -69,34 +90,8 @@ void	all_pthread_join(
 	i = 0;
 	while (i < pinfo->n_philo)
 	{
-		pthread_join(threads[i++], NULL);
+		pthread_join(threads[i], (void *)(&pinfo->exit_status[i]));
+		i++;
 	}
-	pthread_join(log_thread, NULL);
-}
-
-int	main(int argc, char **argv)
-{
-	pthread_t	*threads;
-	pthread_t	log_thread;
-	t_pargs		**pargs_arr;
-	t_pinfo		*pinfo;
-	t_fork		**fork_arr;
-
-	pinfo = create_pinfo(argc, argv);
-	if (pinfo == NULL)
-	{
-		error_msg_on_validation();
-		exit (1);
-	}
-	fork_arr = create_fork_arr(pinfo->n_philo);
-	pargs_arr = create_pargs_arr(pinfo->n_philo, pinfo, fork_arr);
-	pthread_create(&(log_thread), NULL, log_routine, pinfo);
-	threads = create_pthreads_arr(pinfo->n_philo, pargs_arr);
-	start_philo_simulation(300, pinfo);
-	all_pthread_join(pinfo, threads, log_thread);
-	free_pargs_arr(pargs_arr);
-	free_fork_arr(fork_arr);
-	free_pinfo(pinfo);
-	free(threads);
-	return (0);
+	pthread_join(log_thread, (void *)(&pinfo->exit_status[i]));
 }

@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 01:24:07 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/10 06:49:47 by marvin           ###   ########.fr       */
+/*   Updated: 2025/10/10 07:51:12 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	*philo_thread_action(void *args)
 			break ;
 	}
 	modify_common_state(pargs, STOP_PHILO_SIM);
-	return (NULL);
+	return (0);
 }
 
 static void	sync_start_tv(t_pargs *pargs)
