@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tv_utils.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/02 15:58:45 by marvin            #+#    #+#             */
-/*   Updated: 2025/10/02 15:58:56 by marvin           ###   ########.fr       */
+/*   Created: 2025/10/02 15:58:45 by tkatsuma          #+#    #+#             */
+/*   Updated: 2025/10/17 22:29:50 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,10 @@ time_t	tv2time_t(t_tv tv)
 
 	if (tv.tv_sec > LONG_MAX - 1000000 || tv.tv_sec < 0)
 	{
-		write(2, "tv2str: tv.tv_sec > LONG_MAX - 1000000 \
-			|| tv.tv_sec < 0\n", 56);
+		if (write(1, "tv2str: tv.tv_sec > LONG_MAX - 1000000", 38) < 0)
+			return (1);
+		if (write(1, "|| tv.tv_sec < 0\n", 17) < 0)
+			return (1);
 		return (0);
 	}
 	usec = tv.tv_sec * 1000000 + tv.tv_usec;
