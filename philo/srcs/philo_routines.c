@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 00:54:26 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 22:29:50 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/17 16:53:28 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,6 @@ int	initial_routine(t_pargs **pargs)
 	}
 	res = get_fork_if_possible(
 			&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
-	if (res == -1)
-		return (1);
 	if (res == 1)
 	{
 		(*pargs)->n_eat++;
@@ -88,8 +86,6 @@ int	thinking_routine(t_pargs **pargs)
 		usleep(50);
 	res = get_fork_if_possible(
 			&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
-	if (res == -1)
-		return (1);
 	if (res == 1)
 	{
 		(*pargs)->n_eat++;
@@ -112,7 +108,7 @@ int	sleeping_routine(t_pargs **pargs)
 		res = statechange_and_log_think(*pargs);
 		if (res == 1)
 			return (1);
-		return (thinking_routine(pargs));
+		return (0);
 	}
 	if (utts - elapsed_time < IMMINENT_THRES + SLEEPING_USLEEP)
 		return (0);

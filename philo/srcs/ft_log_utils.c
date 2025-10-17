@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 05:18:09 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 23:12:35 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/17 16:54:40 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,17 @@ int	append_log_buf(t_pargs *pargs, char *ts_id_msg)
 	pthread_mutex_lock(pargs->info->log_mutex);
 	pthread_mutex_lock(pargs->info->data_mutex);
 	if (pargs->info->log_buf == NULL)
+	{
+		pthread_mutex_unlock(pargs->info->data_mutex);
 		return (pthread_mutex_unlock(pargs->info->log_mutex), 1);
+	}
 	tmp_buf = ft_strjoin(pargs->info->log_buf, ts_id_msg);
 	free_str_set_null(&ts_id_msg);
 	if (tmp_buf == NULL)
+	{
+		pthread_mutex_unlock(pargs->info->data_mutex);
 		return (pthread_mutex_unlock(pargs->info->log_mutex), 1);
+	}
 	free_str_set_null(&pargs->info->log_buf);
 	pargs->info->log_buf = tmp_buf;
 	pthread_mutex_unlock(pargs->info->data_mutex);
@@ -82,17 +88,18 @@ void	*_log_routine(void *args)
 	while (get_cstate(info) == ALL_PHILO_LIVE && info->pfull != info->n_philo)
 		if (_log_loop(info) != 0)
 			break ;
-	if (info->pfull == info->n_philo)
-		modify_common_state2(info, STOP_PHILO_SIM);
 	pthread_mutex_lock(info->log_mutex);
-	pdied = ft_strnstr(info->log_buf, "died", ft_strlen(info->log_buf));
-	if (pdied != NULL)
+	if (info->pfull == info->n_philo)
 	{
-		write(1, info->log_buf, pdied - info->log_buf + 4);
-		write(1, "\n", 1);
-	}
-	else
+		modify_common_state2(info, STOP_PHILO_SIM);
 		write(1, info->log_buf, ft_strlen(info->log_buf));
+		free_str_set_null(&(info->log_buf));
+		pthread_mutex_unlock(info->log_mutex);
+		return (0);
+	}
+	pdied = ft_strnstr(info->log_buf, "died", ft_strlen(info->log_buf));
+	write(1, info->log_buf, pdied - info->log_buf + 4);
+	write(1, "\n", 1);
 	free_str_set_null(&(info->log_buf));
 	pthread_mutex_unlock(info->log_mutex);
 	return (0);
