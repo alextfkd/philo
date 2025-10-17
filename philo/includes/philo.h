@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/17 22:30:29 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 22:30:32 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/17 22:51:47 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,6 +184,6 @@ void				free_pargs(t_pargs *pargs);
 void				error_msg_on_validation(void);
 char				*create_ts_id_msg(t_pargs *pargs, t_tv tv, char *msg);
 int					append_log_buf(t_pargs *pargs, char *ts_id_msg);
-void				_log_loop(t_pinfo *info);
+int					_log_loop(t_pinfo *info);
 void				*_log_routine(void *args);
 #endif

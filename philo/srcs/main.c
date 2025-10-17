@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/20 13:17:27 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 22:29:50 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/17 23:11:43 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,12 @@ int	main(int argc, char **argv)
 	if (fork_arr == NULL)
 		return (free_pinfo(pinfo), 1);
 	pargs_arr = create_pargs_arr(pinfo->n_philo, pinfo, fork_arr);
+	if (pargs_arr == NULL)
+		return (free_and_exit(NULL, fork_arr, NULL, pinfo));
 	pthread_create(&(log_thread), NULL, _log_routine, pinfo);
 	p_threads = create_pthreads_arr(pinfo->n_philo, pargs_arr);
+	if (p_threads == NULL)
+		return (free_and_exit(pargs_arr, fork_arr, NULL, pinfo));
 	_start_philo_simulation(300, pinfo);
 	_all_pthread_join(pinfo, p_threads, log_thread);
 	return (free_and_exit(pargs_arr, fork_arr, p_threads, pinfo));
