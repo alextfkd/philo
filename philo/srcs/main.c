@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/20 13:17:27 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/20 21:51:33 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/20 22:03:54 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ static void	_if_mem_enough(void)
 {
 	int	*arr;
 
-	arr = (int *)malloc(sizeof(int) * 10000);
+	arr = (int *)malloc(sizeof(int) * 10000000);
 	if (arr == NULL)
 	{
 		write(2, "Malloc failure: Not enough memory. Aborting.\n", 45);
