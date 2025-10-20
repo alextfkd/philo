@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/20 13:17:27 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 23:11:43 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/20 21:51:33 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ static int	free_and_exit(
 				pthread_t *p_threads,
 				t_pinfo *pinfo
 				);
+static void	_if_mem_enough(void);
 
 int	main(int argc, char **argv)
 {
@@ -33,6 +34,7 @@ int	main(int argc, char **argv)
 	t_pinfo		*pinfo;
 	t_fork		**fork_arr;
 
+	_if_mem_enough();
 	pinfo = create_pinfo(argc, argv);
 	if (pinfo == NULL)
 		return (error_msg_on_validation(), 1);
@@ -98,4 +100,17 @@ static void	_all_pthread_join(
 		i++;
 	}
 	pthread_join(log_thread, (void *)(&pinfo->exit_status[i]));
+}
+
+static void	_if_mem_enough(void)
+{
+	int	*arr;
+
+	arr = (int *)malloc(sizeof(int) * 10000);
+	if (arr == NULL)
+	{
+		write(2, "Malloc failure: Not enough memory. Aborting.\n", 45);
+		exit(1);
+	}
+	free(arr);
 }
