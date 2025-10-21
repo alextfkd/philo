@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 05:18:09 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 16:54:40 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/21 03:19:49 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,13 @@ int	append_log_buf(t_pargs *pargs, char *ts_id_msg)
 	char	*tmp_buf;
 
 	if (pargs == NULL || pargs->info == NULL || ts_id_msg == NULL)
-		return (1);
+		return (free_str_set_null(&ts_id_msg), 1);
 	pthread_mutex_lock(pargs->info->log_mutex);
 	pthread_mutex_lock(pargs->info->data_mutex);
 	if (pargs->info->log_buf == NULL)
 	{
 		pthread_mutex_unlock(pargs->info->data_mutex);
+		free_str_set_null(&ts_id_msg);
 		return (pthread_mutex_unlock(pargs->info->log_mutex), 1);
 	}
 	tmp_buf = ft_strjoin(pargs->info->log_buf, ts_id_msg);
