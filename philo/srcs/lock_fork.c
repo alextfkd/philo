@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 00:40:16 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 22:29:50 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/21 10:39:10 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,16 @@ void	unlock_fork_mutex(t_fork *rfork, t_fork *lfork)
 		pthread_mutex_unlock(&((rfork)->mutex));
 		pthread_mutex_unlock(&((lfork)->mutex));
 	}
+}
+
+void	lock_log_data_mutex(t_pargs *pargs)
+{
+	pthread_mutex_lock(pargs->info->log_mutex);
+	pthread_mutex_lock(pargs->info->data_mutex);
+}
+
+void	unlock_data_log_mutex(t_pargs *pargs)
+{
+	pthread_mutex_unlock(pargs->info->data_mutex);
+	pthread_mutex_unlock(pargs->info->log_mutex);
 }

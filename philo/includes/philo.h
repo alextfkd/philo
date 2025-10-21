@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/17 22:30:29 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 22:51:47 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/21 10:21:47 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,7 @@ typedef struct s_pargs
 	int				uttd;
 	int				utte;
 	int				utts;
+	int				uthres;
 	struct timeval	start_tv;
 	struct timeval	lastmeal_tv;
 	struct timeval	pstatemodified_tv;
@@ -186,4 +187,9 @@ char				*create_ts_id_msg(t_pargs *pargs, t_tv tv, char *msg);
 int					append_log_buf(t_pargs *pargs, char *ts_id_msg);
 int					_log_loop(t_pinfo *info);
 void				*_log_routine(void *args);
+int					append_log_buf2(t_pargs *pargs, char *msg, t_tv *tv);
+void				auto_sleep(int remaining);
+int					ft_min(int a, int b);
+void				lock_log_data_mutex(t_pargs *pargs);
+void				unlock_data_log_mutex(t_pargs *pargs);
 #endif

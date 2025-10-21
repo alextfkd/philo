@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 01:13:41 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 22:29:50 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/21 10:24:39 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,88 +15,67 @@
 int	takefork_and_log(t_pargs *pargs)
 {
 	t_tv	tv;
-	char	*ts_id_msg1;
-	char	*ts_id_msg2;
 
-	tv = get_tv();
-	ts_id_msg1 = create_ts_id_msg(pargs, tv, pargs->msg_fork);
-	if (ts_id_msg1 == NULL)
+	if (append_log_buf2(pargs, pargs->msg_fork, &tv) != 0)
 		return (1);
-	if (append_log_buf(pargs, ts_id_msg1) != 0)
-		return (1);
-	ts_id_msg2 = create_ts_id_msg(pargs, tv, pargs->msg_fork);
-	if (ts_id_msg2 == NULL)
-		return (1);
-	if (append_log_buf(pargs, ts_id_msg2) != 0)
+	if (append_log_buf2(pargs, pargs->msg_fork, &tv) != 0)
 		return (1);
 	return (0);
 }
 
 int	statechange_and_log_died(t_pargs *pargs)
 {
-	t_tv	tv;
-	char	*ts_id_msg;
-
-	tv = get_tv();
-	ts_id_msg = create_ts_id_msg(pargs, tv, pargs->msg_died);
-	if (ts_id_msg == NULL)
-		return (1);
-	if (append_log_buf(pargs, ts_id_msg) != 0)
+	if (append_log_buf2(
+			pargs,
+			pargs->msg_died,
+			&(pargs->pstatemodified_tv)
+		) != 0
+	)
 		return (1);
 	pargs->pstate = PHILO_DIED;
-	pargs->pstatemodified_tv = tv;
 	return (0);
 }
 
 int	statechange_and_log_eat(t_pargs *pargs)
 {
-	t_tv	tv;
-	char	*ts_id_msg;
-
-	tv = get_tv();
-	ts_id_msg = create_ts_id_msg(pargs, tv, pargs->msg_eat);
-	if (ts_id_msg == NULL)
-		return (1);
-	if (append_log_buf(pargs, ts_id_msg) != 0)
+	if (append_log_buf2(
+			pargs,
+			pargs->msg_eat,
+			&(pargs->pstatemodified_tv)
+		) != 0
+	)
 		return (1);
 	pthread_mutex_lock(pargs->info->data_mutex);
 	if (pargs->info->must_eat == pargs->n_eat)
 		pargs->info->pfull++;
 	pthread_mutex_unlock(pargs->info->data_mutex);
 	pargs->pstate = PHILO_EATING;
-	pargs->lastmeal_tv = tv;
-	pargs->pstatemodified_tv = tv;
+	pargs->lastmeal_tv = pargs->pstatemodified_tv;
 	return (0);
 }
 
 int	statechange_and_log_sleep(t_pargs *pargs)
 {
-	t_tv	tv;
-	char	*ts_id_msg;
-
-	tv = get_tv();
-	ts_id_msg = create_ts_id_msg(pargs, tv, pargs->msg_sleep);
-	if (ts_id_msg == NULL)
-		return (1);
-	if (append_log_buf(pargs, ts_id_msg) != 0)
+	if (append_log_buf2(
+			pargs,
+			pargs->msg_sleep,
+			&(pargs->pstatemodified_tv)
+		) != 0
+	)
 		return (1);
 	pargs->pstate = PHILO_SLEEPING;
-	pargs->pstatemodified_tv = tv;
 	return (0);
 }
 
 int	statechange_and_log_think(t_pargs *pargs)
 {
-	t_tv	tv;
-	char	*ts_id_msg;
-
-	tv = get_tv();
-	ts_id_msg = create_ts_id_msg(pargs, tv, pargs->msg_think);
-	if (ts_id_msg == NULL)
-		return (1);
-	if (append_log_buf(pargs, ts_id_msg) != 0)
+	if (append_log_buf2(
+			pargs,
+			pargs->msg_think,
+			&(pargs->pstatemodified_tv)
+		) != 0
+	)
 		return (1);
 	pargs->pstate = PHILO_THINKING;
-	pargs->pstatemodified_tv = tv;
 	return (0);
 }

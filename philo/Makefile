@@ -52,4 +52,22 @@ fclean: clean
 
 re: fclean all
 
+test: re
+	echo "ODD TEST (DIE)"
+	./philo 1 800 200 200 10 | grep died | wc -l
+
+	echo "ODD TEST (SURVIVE)"
+	./philo 3 800 200 200 10 | grep died | wc -l
+	./philo 5 800 200 200 10 | grep died | wc -l
+	./philo 11 800 200 200 10 | grep died | wc -l
+	./philo 101 800 200 200 10 | grep died | wc -l
+	./philo 199 800 200 200 10 | grep died | wc -l
+
+	echo "EVEN TEST (SURVIVE)"
+	./philo 4 600 200 200 10 | grep died | wc -l
+	./philo 6 600 200 200 10 | grep died | wc -l
+	./philo 12 600 200 200 10 | grep died | wc -l
+	./philo 102 600 200 200 10 | grep died | wc -l
+	./philo 200 600 200 200 10 | grep died | wc -l
+
 .PHONY: all clean fclean re bonus ts

@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 05:47:59 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 22:29:50 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/21 09:08:40 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,11 @@ static	void	_init_pargs(int id, t_pargs *pargs, t_pinfo *info)
 	pargs->uttd = info->uttd;
 	pargs->utte = info->utte;
 	pargs->utts = info->utts;
+	pargs->uthres = info->uttd / 20;
+	if (pargs->uthres < 2000)
+		pargs->uthres = 2000;
+	if (pargs->uthres > 10000)
+		pargs->uthres = 10000;
 	gettimeofday(&(pargs->lastmeal_tv), NULL);
 	pargs->pstatemodified_tv = pargs->lastmeal_tv;
 	pargs->pstate = PHILO_WAITING_FOR_START;

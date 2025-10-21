@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 15:58:45 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 22:29:50 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/21 10:10:41 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,4 +49,25 @@ time_t	elapsed_us(t_tv current_tv, t_tv initial_tv)
 		tv.tv_usec += 1000000;
 	}
 	return (tv2time_t(tv));
+}
+
+void	auto_sleep(int remaining)
+{
+	if (remaining > 20000)
+		usleep(remaining / 2);
+	else if (remaining > 2000)
+		usleep(1000);
+	else if (remaining > 1000)
+		usleep(500);
+	else if (remaining > 200)
+		usleep(100);
+	else
+		return ;
+}
+
+int	ft_min(int a, int b)
+{
+	if (a > b)
+		return (a);
+	return (b);
 }

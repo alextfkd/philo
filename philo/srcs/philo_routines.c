@@ -6,14 +6,14 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 00:54:26 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/21 03:45:39 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/21 10:11:17 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 #define IMMINENT_THRES 30
-#define EATING_USLEEP 100
-#define SLEEPING_USLEEP 100
+#define EATING_USLEEP 300
+#define SLEEPING_USLEEP 300
 
 int	died_routine(t_pargs **pargs)
 {
@@ -44,9 +44,8 @@ int	eating_routine(t_pargs **pargs)
 			return (1);
 		return (0);
 	}
-	if (utte - elapsed_time < IMMINENT_THRES + EATING_USLEEP)
-		return (0);
-	usleep(EATING_USLEEP);
+	if (utte - elapsed_time < (*pargs)->uthres)
+		auto_sleep(utte - elapsed_time);
 	return (0);
 }
 
@@ -54,9 +53,9 @@ int	initial_routine(t_pargs **pargs)
 {
 	int	res;
 
-	(*pargs)->lastmeal_tv = get_tv();
+	usleep(ft_min((*pargs)->uttd / 5, 100 * (*pargs)->id));
 	if ((*pargs)->id % 2 == 0)
-		usleep(100 * (*pargs)->n_philo);
+		usleep(ft_min((*pargs)->uttd / 5, 100 * (*pargs)->n_philo));
 	res = get_fork_if_possible(
 			&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
 	if (res == 1)
@@ -79,8 +78,8 @@ int	thinking_routine(t_pargs **pargs)
 
 	uttd = (*pargs)->uttd;
 	elapsed_time = elapsed_us(get_tv(), (*pargs)->lastmeal_tv);
-	if (100 <= uttd - elapsed_time)
-		usleep(50);
+	if (uttd - elapsed_time < (*pargs)->uthres)
+		auto_sleep(uttd - elapsed_time);
 	res = get_fork_if_possible(
 			&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
 	if (res == 1)
@@ -105,11 +104,10 @@ int	sleeping_routine(t_pargs **pargs)
 		res = statechange_and_log_think(*pargs);
 		if (res == 1)
 			return (1);
+		usleep(500);
 		return (0);
 	}
-	if (utts - elapsed_time < IMMINENT_THRES + SLEEPING_USLEEP)
-		return (0);
-	else
-		usleep(SLEEPING_USLEEP);
+	if (utts - elapsed_time < (*pargs)->uthres)
+		auto_sleep(utts - elapsed_time);
 	return (0);
 }
