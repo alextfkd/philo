@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 00:54:26 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/21 03:45:39 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/21 05:35:07 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,11 @@ int	died_routine(t_pargs **pargs)
 {
 	int	res;
 
+	pthread_mutex_lock((*pargs)->info->data_mutex);
 	res = statechange_and_log_died(*pargs);
 	if (res == 1)
 		(*pargs)->pstate = PHILO_FAILURE;
+	pthread_mutex_unlock((*pargs)->info->data_mutex);
 	return (res);
 }
 
@@ -35,14 +37,15 @@ int	eating_routine(t_pargs **pargs)
 	elapsed_time = elapsed_us(get_tv(), (*pargs)->pstatemodified_tv);
 	if (elapsed_time > utte)
 	{
+		pthread_mutex_lock((*pargs)->info->data_mutex);
 		res = put_fork_if_possible(
 				&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
 		if (res == -1)
-			return (1);
+			return(pthread_mutex_unlock((*pargs)->info->data_mutex), 1);
 		res = statechange_and_log_sleep(*pargs);
 		if (res != 0)
-			return (1);
-		return (0);
+			return(pthread_mutex_unlock((*pargs)->info->data_mutex), 1);
+		return(pthread_mutex_unlock((*pargs)->info->data_mutex), 0);
 	}
 	if (utte - elapsed_time < IMMINENT_THRES + EATING_USLEEP)
 		return (0);
@@ -57,18 +60,22 @@ int	initial_routine(t_pargs **pargs)
 	(*pargs)->lastmeal_tv = get_tv();
 	if ((*pargs)->id % 2 == 0)
 		usleep(100 * (*pargs)->n_philo);
+	//pthread_mutex_lock((*pargs)->info->data_mutex);
 	res = get_fork_if_possible(
 			&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
 	if (res == 1)
 	{
 		(*pargs)->n_eat++;
+		pthread_mutex_lock((*pargs)->info->data_mutex);
 		res = statechange_and_log_eat(*pargs);
-		return (res);
+		pthread_mutex_unlock((*pargs)->info->data_mutex);
+		return(res);
 	}
+	pthread_mutex_lock((*pargs)->info->data_mutex);
 	res = statechange_and_log_think(*pargs);
 	if (res == -1)
-		return (1);
-	return (0);
+		return(pthread_mutex_unlock((*pargs)->info->data_mutex), 1);
+	return(pthread_mutex_unlock((*pargs)->info->data_mutex), 0);
 }
 
 int	thinking_routine(t_pargs **pargs)
@@ -86,8 +93,9 @@ int	thinking_routine(t_pargs **pargs)
 	if (res == 1)
 	{
 		(*pargs)->n_eat++;
+		pthread_mutex_lock((*pargs)->info->data_mutex);
 		res = statechange_and_log_eat(*pargs);
-		return (res);
+		return(pthread_mutex_unlock((*pargs)->info->data_mutex), res);
 	}
 	return (0);
 }
@@ -102,10 +110,11 @@ int	sleeping_routine(t_pargs **pargs)
 	elapsed_time = elapsed_us(get_tv(), (*pargs)->pstatemodified_tv);
 	if (elapsed_time > utts)
 	{
+		pthread_mutex_lock((*pargs)->info->data_mutex);
 		res = statechange_and_log_think(*pargs);
 		if (res == 1)
-			return (1);
-		return (0);
+			return(pthread_mutex_unlock((*pargs)->info->data_mutex), 1);
+		return(pthread_mutex_unlock((*pargs)->info->data_mutex), 0);
 	}
 	if (utts - elapsed_time < IMMINENT_THRES + SLEEPING_USLEEP)
 		return (0);

@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 01:41:10 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 22:29:50 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/21 04:14:15 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ int	get_fork_if_possible(t_fork **rfork, t_fork **lfork, t_pargs *pargs)
 	res = 0;
 	if (rfork == NULL || lfork == NULL || pargs == NULL)
 		return (-1);
+	pthread_mutex_lock(pargs->info->data_mutex);
 	if (lock_fork_mutex(*rfork, *lfork) != 0)
 		return (-1);
 	rfstate = (*rfork)->fstate;
@@ -102,6 +103,7 @@ int	get_fork_if_possible(t_fork **rfork, t_fork **lfork, t_pargs *pargs)
 			res = 1;
 	}
 	unlock_fork_mutex(*rfork, *lfork);
+	pthread_mutex_unlock(pargs->info->data_mutex);
 	return (res);
 }
 

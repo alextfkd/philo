@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 05:18:09 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/21 03:19:49 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/21 06:07:35 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,18 +61,44 @@ int	append_log_buf(t_pargs *pargs, char *ts_id_msg)
 	return (0);
 }
 
+int	append_log_buf_fork(t_pargs *pargs, char *ts_id_msg)
+{
+	char	*tmp_buf;
+
+	if (pargs == NULL || pargs->info == NULL || ts_id_msg == NULL)
+		return (free_str_set_null(&ts_id_msg), 1);
+	pthread_mutex_lock(pargs->info->log_mutex);
+	if (pargs->info->log_buf == NULL)
+	{
+		free_str_set_null(&ts_id_msg);
+		return(pthread_mutex_unlock(pargs->info->log_mutex), 1);
+	}
+	tmp_buf = ft_strjoin(pargs->info->log_buf, ts_id_msg);
+	free_str_set_null(&ts_id_msg);
+	if (tmp_buf == NULL)
+	{
+		return(pthread_mutex_unlock(pargs->info->log_mutex), 1);
+	}
+	free_str_set_null(&pargs->info->log_buf);
+	pargs->info->log_buf = tmp_buf;
+	return(pthread_mutex_unlock(pargs->info->log_mutex), 0);
+}
+
 int	_log_loop(t_pinfo *info)
 {
 	pthread_mutex_lock(info->log_mutex);
+	pthread_mutex_lock(info->data_mutex);
 	write(1, info->log_buf, ft_strlen(info->log_buf));
 	free_str_set_null(&(info->log_buf));
 	info->log_buf = (char *)malloc(sizeof(char) * 1);
 	if (info->log_buf == NULL)
 	{
+		pthread_mutex_unlock(info->data_mutex);
 		pthread_mutex_unlock(info->log_mutex);
 		return (1);
 	}
 	info->log_buf[0] = '\0';
+	pthread_mutex_unlock(info->data_mutex);
 	pthread_mutex_unlock(info->log_mutex);
 	usleep(50);
 	return (0);

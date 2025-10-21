@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 01:24:07 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 16:53:48 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/21 03:50:42 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,11 @@ static int	philo_loop_routine(t_pargs **pargs)
 {
 	int	fail_flag;
 
+	if ((*pargs)->pstate == PHILO_INITIAL_STATE)
+	{
+		fail_flag = initial_routine(pargs);
+		return (fail_flag);
+	}
 	fail_flag = 0;
 	if (if_philo_starved(pargs) == 1)
 		return (fail_flag);
