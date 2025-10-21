@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 00:54:26 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 16:53:28 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/21 03:45:39 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,9 @@ int	initial_routine(t_pargs **pargs)
 {
 	int	res;
 
-	usleep((400 / (*pargs)->n_philo) * ((*pargs)->id) / 2);
+	(*pargs)->lastmeal_tv = get_tv();
 	if ((*pargs)->id % 2 == 0)
-	{
-		usleep(80);
-		(*pargs)->lastmeal_tv = get_tv();
-	}
+		usleep(100 * (*pargs)->n_philo);
 	res = get_fork_if_possible(
 			&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
 	if (res == 1)
