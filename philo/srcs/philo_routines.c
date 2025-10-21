@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 00:54:26 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/21 10:11:17 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/21 23:03:10 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,18 @@ int	initial_routine(t_pargs **pargs)
 {
 	int	res;
 
-	usleep(ft_min((*pargs)->uttd / 5, 100 * (*pargs)->id));
-	if ((*pargs)->id % 2 == 0)
-		usleep(ft_min((*pargs)->uttd / 5, 100 * (*pargs)->n_philo));
+	if ((*pargs)->n_philo % 2 == 0)
+	{
+		if ((*pargs)->id % 2 == 0)
+			usleep(ft_min((*pargs)->uttd / 5, 100 * (*pargs)->n_philo));
+	}
+	else
+	{
+		usleep((*pargs)->uttd * 0.5 / ((*pargs)->n_philo + 1) * ((*pargs)->id - 1));
+		if ((*pargs)->id % 2 == 0)
+			usleep(200 * (*pargs)->n_philo);
+			//usleep(ft_min((*pargs)->uttd / 5, 200 * (*pargs)->n_philo));
+	}
 	res = get_fork_if_possible(
 			&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
 	if (res == 1)
@@ -74,12 +83,24 @@ int	thinking_routine(t_pargs **pargs)
 {
 	int			res;
 	time_t		elapsed_time;
+	time_t		thinking_time;
 	int			uttd;
 
 	uttd = (*pargs)->uttd;
 	elapsed_time = elapsed_us(get_tv(), (*pargs)->lastmeal_tv);
+	thinking_time = elapsed_us(get_tv(), (*pargs)->pstatemodified_tv);
+	if ((*pargs)->n_philo % 2 == 1 && thinking_time < (*pargs)->utte)
+	{
+		if ((*pargs)->lastmeal_tv.tv_usec != (*pargs)->start_tv.tv_usec)
+		{
+			usleep((*pargs)->utte - thinking_time);
+			return (0);
+		}
+	}
 	if (uttd - elapsed_time < (*pargs)->uthres)
+	{
 		auto_sleep(uttd - elapsed_time);
+	}
 	res = get_fork_if_possible(
 			&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
 	if (res == 1)
@@ -104,7 +125,6 @@ int	sleeping_routine(t_pargs **pargs)
 		res = statechange_and_log_think(*pargs);
 		if (res == 1)
 			return (1);
-		usleep(500);
 		return (0);
 	}
 	if (utts - elapsed_time < (*pargs)->uthres)
