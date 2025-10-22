@@ -1,6 +1,6 @@
 NAME = philo
 NAME_TS = philo_ts
-CC = cc -g
+CC = cc
 CC_TS = $(CC) -O1 -fsanitize=thread -Wall -Wextra -Werror -Wno-unused-result
 
 OBJDIR = ./objs

@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 00:54:26 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/21 23:03:10 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/22 02:29:50 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,20 +51,16 @@ int	eating_routine(t_pargs **pargs)
 
 int	initial_routine(t_pargs **pargs)
 {
-	int	res;
+	int		res;
+	t_pargs	*pa;
 
-	if ((*pargs)->n_philo % 2 == 0)
-	{
-		if ((*pargs)->id % 2 == 0)
-			usleep(ft_min((*pargs)->uttd / 5, 100 * (*pargs)->n_philo));
-	}
-	else
-	{
-		usleep((*pargs)->uttd * 0.5 / ((*pargs)->n_philo + 1) * ((*pargs)->id - 1));
-		if ((*pargs)->id % 2 == 0)
-			usleep(200 * (*pargs)->n_philo);
-			//usleep(ft_min((*pargs)->uttd / 5, 200 * (*pargs)->n_philo));
-	}
+	pa = (*pargs);
+	if ((*pargs)->n_philo % 2 == 0 && ((*pargs)->id % 2 == 0))
+		usleep(ft_min((*pargs)->uttd / 5, 100 * (*pargs)->n_philo));
+	if ((*pargs)->n_philo % 2 == 1)
+		usleep(pa->uttd / 2 / (pa->n_philo + 1) * (pa->id - 1));
+	if ((*pargs)->n_philo % 2 == 1 && ((*pargs)->id % 2 == 0))
+		usleep(200 * (*pargs)->n_philo);
 	res = get_fork_if_possible(
 			&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
 	if (res == 1)
@@ -90,17 +86,10 @@ int	thinking_routine(t_pargs **pargs)
 	elapsed_time = elapsed_us(get_tv(), (*pargs)->lastmeal_tv);
 	thinking_time = elapsed_us(get_tv(), (*pargs)->pstatemodified_tv);
 	if ((*pargs)->n_philo % 2 == 1 && thinking_time < (*pargs)->utte)
-	{
 		if ((*pargs)->lastmeal_tv.tv_usec != (*pargs)->start_tv.tv_usec)
-		{
-			usleep((*pargs)->utte - thinking_time);
-			return (0);
-		}
-	}
+			return (usleep((*pargs)->utte - thinking_time), 0);
 	if (uttd - elapsed_time < (*pargs)->uthres)
-	{
 		auto_sleep(uttd - elapsed_time);
-	}
 	res = get_fork_if_possible(
 			&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
 	if (res == 1)

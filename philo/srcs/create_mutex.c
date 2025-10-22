@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 01:41:10 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 22:29:50 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/22 02:30:07 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,6 @@ int	get_fork_if_possible(t_fork **rfork, t_fork **lfork, t_pargs *pargs)
 		(*lfork)->owner = &(pargs->id);
 		(*rfork)->fstate = FORK_OCCUPIED;
 		(*lfork)->fstate = FORK_OCCUPIED;
-		res = takefork_and_log(pargs);
 		if (res == 1)
 			res = -1;
 		else

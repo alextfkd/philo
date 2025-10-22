@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 01:13:41 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/21 10:24:39 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/22 02:10:34 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,21 @@ int	takefork_and_log(t_pargs *pargs)
 	return (0);
 }
 
+int	statechange_and_log_eat(t_pargs *pargs)
+{
+	lock_log_data_mutex(pargs);
+	pargs->pstatemodified_tv = get_tv();
+	append_log_buf_nolock(pargs, pargs->msg_fork, pargs->pstatemodified_tv);
+	append_log_buf_nolock(pargs, pargs->msg_fork, pargs->pstatemodified_tv);
+	append_log_buf_nolock(pargs, pargs->msg_eat, pargs->pstatemodified_tv);
+	if (pargs->info->must_eat == pargs->n_eat)
+		pargs->info->pfull++;
+	pargs->pstate = PHILO_EATING;
+	pargs->lastmeal_tv = pargs->pstatemodified_tv;
+	unlock_data_log_mutex(pargs);
+	return (0);
+}
+
 int	statechange_and_log_died(t_pargs *pargs)
 {
 	if (append_log_buf2(
@@ -33,24 +48,6 @@ int	statechange_and_log_died(t_pargs *pargs)
 	)
 		return (1);
 	pargs->pstate = PHILO_DIED;
-	return (0);
-}
-
-int	statechange_and_log_eat(t_pargs *pargs)
-{
-	if (append_log_buf2(
-			pargs,
-			pargs->msg_eat,
-			&(pargs->pstatemodified_tv)
-		) != 0
-	)
-		return (1);
-	pthread_mutex_lock(pargs->info->data_mutex);
-	if (pargs->info->must_eat == pargs->n_eat)
-		pargs->info->pfull++;
-	pthread_mutex_unlock(pargs->info->data_mutex);
-	pargs->pstate = PHILO_EATING;
-	pargs->lastmeal_tv = pargs->pstatemodified_tv;
 	return (0);
 }
 
