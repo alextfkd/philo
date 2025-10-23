@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 01:24:07 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/17 16:53:48 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/23 07:25:19 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,4 +82,21 @@ static int	if_philo_starved(t_pargs **pargs)
 		return (1);
 	}
 	return (0);
+}
+
+void	initial_usleep(t_pargs *pargs)
+{
+	int	margin;
+
+	if (pargs->n_philo % 2 == 0 && (pargs->id % 2 == 0))
+	{
+		margin = ft_max(0, pargs->uttd - pargs->utte * 1 - pargs->utts);
+		usleep(margin / 2);
+	}
+	if (pargs->n_philo % 2 == 1)
+	{
+		margin = (pargs->utte + pargs->utts) / 2;
+		usleep(margin * (pargs->id - 1) / pargs->n_philo);
+	}
+	return ;
 }

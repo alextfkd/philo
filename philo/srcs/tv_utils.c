@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 15:58:45 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/21 10:10:41 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/23 05:58:56 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,11 +63,4 @@ void	auto_sleep(int remaining)
 		usleep(100);
 	else
 		return ;
-}
-
-int	ft_min(int a, int b)
-{
-	if (a > b)
-		return (a);
-	return (b);
 }

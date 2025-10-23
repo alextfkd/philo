@@ -7,7 +7,7 @@ OBJDIR = ./objs
 OBJDIR_TS = ./objs_ts
 SRCDIR = ./srcs
 
-SRCS = main.c ft_atoi.c philo_log.c ft_types.c validation.c pinfo.c create_mutex.c create_threads.c putils.c ft_strjoin.c ft_strlen.c ft_ltoa.c ft_itoa.c lock_fork.c philo_routines.c philo_loop.c create_log_msg.c common_state.c create_philo_args.c tv_utils.c ft_strnstr.c ft_strncmp.c ft_log_utils.c
+SRCS = main.c ft_atoi.c philo_log.c ft_types.c validation.c pinfo.c create_mutex.c create_threads.c putils.c ft_strjoin.c ft_strlen.c ft_ltoa.c ft_itoa.c lock_fork.c philo_routines.c philo_loop.c create_log_msg.c common_state.c create_philo_args.c tv_utils.c ft_strnstr.c ft_strncmp.c ft_log_utils.c putils2.c
 
 OBJS = $(addprefix $(OBJDIR)/, $(SRCS:.c=.o))
 OBJS_TS = $(addprefix $(OBJDIR_TS)/, $(SRCS:.c=.o))
@@ -56,18 +56,47 @@ test: re
 	echo "ODD TEST (DIE)"
 	./philo 1 800 200 200 10 | grep died | wc -l
 
-	echo "ODD TEST (SURVIVE)"
+	echo "ODD TEST n 800 200 10 (SURVIVE)"
 	./philo 3 800 200 200 10 | grep died | wc -l
 	./philo 5 800 200 200 10 | grep died | wc -l
 	./philo 11 800 200 200 10 | grep died | wc -l
+	./philo 51 800 200 200 10 | grep died | wc -l
 	./philo 101 800 200 200 10 | grep died | wc -l
+	./philo 151 800 200 200 10 | grep died | wc -l
 	./philo 199 800 200 200 10 | grep died | wc -l
 
-	echo "EVEN TEST (SURVIVE)"
+	echo "ODD TEST n 850 300 100 10 (SURVIVE)"
+	./philo 5 850 300 100 10 | grep died | wc -l
+	./philo 11 850 300 100 10 | grep died | wc -l
+	./philo 51 850 300 100 10 | grep died | wc -l
+	./philo 101 850 300 100 10 | grep died | wc -l
+	./philo 151 850 300 100 10 | grep died | wc -l
+
+	echo "ODD TEST n 900 300 100 10 (SURVIVE)"
+	./philo 199 900 300 100 10 | grep died | wc -l
+
+	echo "EVEN TEST n 600 200 200 10 (SURVIVE)"
 	./philo 4 600 200 200 10 | grep died | wc -l
 	./philo 6 600 200 200 10 | grep died | wc -l
-	./philo 12 600 200 200 10 | grep died | wc -l
-	./philo 102 600 200 200 10 | grep died | wc -l
-	./philo 200 600 200 200 10 | grep died | wc -l
+	./philo 10 600 200 200 10 | grep died | wc -l
+	./philo 50 600 200 200 10 | grep died | wc -l
+	./philo 150 600 200 200 10 | grep died | wc -l
+	echo "EVEN TEST n 650 200 200 10 (SURVIVE)"
+	./philo 200 650 200 200 10 | grep died | wc -l
+
+	echo "EVEN TEST n 700 300 100 10 (SURVIVE)"
+	./philo 4 700 300 100 10 | grep died | wc -l
+	./philo 6 700 300 100 10 | grep died | wc -l
+	./philo 10 700 300 100 10 | grep died | wc -l
+	./philo 50 700 300 100 10 | grep died | wc -l
+
+	echo "EVEN TEST n 800 300 100 10 (SURVIVE)"
+	./philo 100 800 300 100 10 | grep died | wc -l
+
+	echo "EVEN TEST n 900 300 100 10 (SURVIVE)"
+	./philo 200 900 300 100 10 | grep died | wc -l
+
+	echo "EVEN TEST 2 130 60 60 10 (SURVIVE)"
+	./philo 2 130 60 60 100 | grep died | wc -l
 
 .PHONY: all clean fclean re bonus ts

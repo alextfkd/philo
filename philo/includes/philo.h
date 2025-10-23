@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/17 22:30:29 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/22 02:31:24 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/23 07:24:59 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,10 +189,9 @@ void				*_log_routine(void *args);
 int					append_log_buf2(t_pargs *pargs, char *msg, t_tv *tv);
 void				auto_sleep(int remaining);
 int					ft_min(int a, int b);
+int					ft_max(int a, int b);
 void				lock_log_data_mutex(t_pargs *pargs);
 void				unlock_data_log_mutex(t_pargs *pargs);
 int					append_log_buf_nolock(t_pargs *pargs, char *msg, t_tv tv);
-/*
-int					append_log_buf(t_pargs *pargs, char *ts_id_msg);
-*/
+void				initial_usleep(t_pargs *pargs);
 #endif

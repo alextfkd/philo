@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/02 00:54:26 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/23 02:56:39 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/23 07:26:00 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ int	died_routine(t_pargs **pargs)
 {
 	int	res;
 
+	(*pargs)->pstate = PHILO_DIED;
 	res = statechange_and_log_died(*pargs);
 	if (res == 1)
 		(*pargs)->pstate = PHILO_FAILURE;
@@ -49,54 +50,28 @@ int	eating_routine(t_pargs **pargs)
 	return (0);
 }
 
-int	ft_max(int a, int b)
-{
-	if (a > b)
-		return (a);
-	return (b);
-}
-
-/*
-int	ft_min(int a, int b)
-{
-	if (a < b)
-		return (a);
-	return (b);
-}
-*/
-
 int	initial_routine(t_pargs **pargs)
 {
 	int		res;
-	t_pargs	*pa;
 
-	pa = (*pargs);
-	int	safe ;
-	safe = 0;
-	if ((*pargs)->n_philo % 2 == 0 && ((*pargs)->id % 2 == 0))
+	initial_usleep(*pargs);
+	if ((*pargs)->id % 2 == 1)
 	{
-		safe = ft_max(0, pa->uttd - pa->utte * 1 - pa->utts);
-		usleep(safe / 2);
+		res = get_fork_if_possible(
+				&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
+		if (res == 1)
+		{
+			(*pargs)->n_eat++;
+			return (statechange_and_log_eat(*pargs));
+		}
+		return (statechange_and_log_think(*pargs));
 	}
-		//usleep(ft_min((*pargs)->uttd / 5, 100 * (*pargs)->n_philo));
-	if ((*pargs)->n_philo % 2 == 1 && ((*pargs)->id % 2 == 0))
-		usleep(3500 * (pa->id - 1) + 7000);
-	if ((*pargs)->n_philo % 2 == 1 && ((*pargs)->id % 2 == 1))
-		usleep(3500 * (pa->id - 1));
-		//usleep(pa->uttd / 2 / (pa->n_philo + 1) * (pa->id - 1));
-		//usleep(200 * (*pargs)->n_philo);
-	res = get_fork_if_possible(
-			&((*pargs)->r_fork), &((*pargs)->l_fork), *pargs);
-	if (res == 1)
+	else
 	{
-		(*pargs)->n_eat++;
-		res = statechange_and_log_eat(*pargs);
+		res = statechange_and_log_think(*pargs);
+		usleep(2000);
 		return (res);
 	}
-	res = statechange_and_log_think(*pargs);
-	if (res == -1)
-		return (1);
-	return (0);
 }
 
 int	thinking_routine(t_pargs **pargs)
