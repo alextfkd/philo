@@ -6,7 +6,7 @@
 /*   By: tkatsuma <tkatsuma@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/10 05:18:09 by tkatsuma          #+#    #+#             */
-/*   Updated: 2025/10/23 06:53:11 by tkatsuma         ###   ########.fr       */
+/*   Updated: 2025/10/23 08:44:38 by tkatsuma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,23 +60,26 @@ int	append_log_buf2(t_pargs *pargs, char *msg, t_tv *tv)
 	char	*tmp_buf;
 	char	*ts_id_msg;
 
-	pthread_mutex_lock(pargs->info->data_mutex);
+	lock_log_data_mutex(pargs);
 	*tv = get_tv();
 	ts_id_msg = create_ts_id_msg(pargs, *tv, msg);
 	if (pargs == NULL || pargs->info == NULL || ts_id_msg == NULL)
+	{
+		unlock_data_log_mutex(pargs);
 		return (free_str_set_null(&ts_id_msg), 1);
+	}
 	if (pargs->info->log_buf == NULL)
 	{
 		free_str_set_null(&ts_id_msg);
-		return (pthread_mutex_unlock(pargs->info->data_mutex), 1);
+		return (unlock_data_log_mutex(pargs), 1);
 	}
 	tmp_buf = ft_strjoin(pargs->info->log_buf, ts_id_msg);
 	free_str_set_null(&ts_id_msg);
 	if (tmp_buf == NULL)
-		return (pthread_mutex_unlock(pargs->info->data_mutex), 1);
+		return (unlock_data_log_mutex(pargs), 1);
 	free_str_set_null(&pargs->info->log_buf);
 	pargs->info->log_buf = tmp_buf;
-	return (pthread_mutex_unlock(pargs->info->data_mutex), 0);
+	return (unlock_data_log_mutex(pargs), 0);
 }
 
 /*
